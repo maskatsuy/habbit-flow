@@ -26,9 +26,10 @@ describe('App', () => {
     expect(screen.getByText('✅ React Flow')).toBeInTheDocument()
   })
 
-  it('React Flow動作確認セクションが表示されること', () => {
+  it('習慣フローセクションが表示されること', () => {
     render(<App />)
     
-    expect(screen.getByText('React Flow 動作確認')).toBeInTheDocument()
+    expect(screen.getByText('習慣フロー')).toBeInTheDocument()
+    expect(screen.getByText('ノードをクリックして習慣を完了にできます')).toBeInTheDocument()
   })
 })
