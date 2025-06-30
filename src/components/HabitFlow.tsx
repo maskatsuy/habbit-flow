@@ -6,9 +6,9 @@ import ReactFlow, {
   Controls,
   Background,
   MiniMap,
-  Connection,
   ReactFlowProvider,
 } from 'reactflow';
+import type { Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { HabitNode, TriggerNode } from './nodes';
 import { HabitEdge } from './edges';
