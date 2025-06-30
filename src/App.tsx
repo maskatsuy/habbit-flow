@@ -1,3 +1,4 @@
+import FlowDemo from './components/FlowDemo'
 
 function App() {
   return (
@@ -19,6 +20,15 @@ function App() {
           <p className="text-green-600 font-semibold">
             ✅ React Flow
           </p>
+        </div>
+        
+        <div className="mt-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            React Flow 動作確認
+          </h2>
+          <div className="bg-white rounded-lg shadow">
+            <FlowDemo />
+          </div>
         </div>
       </div>
     </div>
