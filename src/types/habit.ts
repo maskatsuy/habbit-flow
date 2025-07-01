@@ -23,6 +23,8 @@ export interface HabitNodeData {
   icon?: string;
   isCompleted: boolean;
   completedAt: Date | null;
+  isDisabled?: boolean;
+  isInactive?: boolean;
 }
 
 export type HabitNode = Node<HabitNodeData, 'habit'>;
@@ -30,6 +32,7 @@ export type HabitNode = Node<HabitNodeData, 'habit'>;
 export interface HabitEdgeData {
   trigger: TriggerType;
   condition: string | null;
+  isActive?: boolean;
 }
 
 export type HabitEdge = Edge<HabitEdgeData>;
