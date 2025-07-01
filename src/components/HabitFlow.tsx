@@ -515,6 +515,38 @@ function HabitFlowInner() {
       <div className="w-full h-[600px]">
         <ReactFlow
         nodes={nodes.map(node => {
+          // アニメーションエッジを計算
+          const animatedEdges = edges.map(edge => {
+            const targetNode = nodes.find(n => n.id === edge.target);
+            const sourceNode = nodes.find(n => n.id === edge.source);
+            
+            let isActive = false;
+            
+            // ターゲットが条件分岐ノードの場合
+            if (targetNode?.type === 'conditional') {
+              const isSourceCompleted = sourceNode?.type === 'habit' ?
+                (sourceNode as HabitNodeType).data.isCompleted :
+                sourceNode?.type === 'trigger' ? true : false;
+              isActive = isSourceCompleted;
+            }
+            // ターゲットが習慣ノードの場合
+            else if (targetNode?.type === 'habit') {
+              const isTargetCompleted = (targetNode as HabitNodeType).data.isCompleted;
+              
+              if (sourceNode?.type === 'conditional') {
+                isActive = isTargetCompleted;
+              } else if (targetNode.id === 'habit-4') {
+                const isSourceCompleted = sourceNode?.type === 'habit' ?
+                  (sourceNode as HabitNodeType).data.isCompleted : false;
+                isActive = isSourceCompleted && isTargetCompleted;
+              } else {
+                isActive = isTargetCompleted;
+              }
+            }
+            
+            return { ...edge, isActive };
+          });
+          
           if (node.type !== 'habit') return node;
           
           const habitNode = node as HabitNodeType;
@@ -551,8 +583,20 @@ function HabitFlowInner() {
             }
           }
           
-          // その他のノードはdisableしない
-          return habitNode;
+          
+          // ノードの両端がアニメーション状態かチェック
+          const incomingActive = animatedEdges.some(e => e.target === node.id && e.isActive);
+          const outgoingActive = animatedEdges.some(e => e.source === node.id && e.isActive);
+          
+          return {
+            ...habitNode,
+            data: {
+              ...habitNode.data,
+              isFlowing: incomingActive && outgoingActive,
+            },
+          };
+        
+        return node;
         })}
         edges={edges.map(edge => {
           const targetNode = nodes.find(n => n.id === edge.target);

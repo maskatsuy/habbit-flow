@@ -25,6 +25,7 @@ export interface HabitNodeData {
   completedAt: Date | null;
   isDisabled?: boolean;
   isInactive?: boolean;
+  isFlowing?: boolean;
 }
 
 export type HabitNode = Node<HabitNodeData, 'habit'>;

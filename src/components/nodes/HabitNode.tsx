@@ -8,7 +8,7 @@ interface HabitNodeProps extends NodeProps<HabitNodeData> {
 }
 
 const HabitNode = memo(({ data, selected, id, onComplete }: HabitNodeProps) => {
-  const { label, icon, isCompleted, isDisabled, isInactive } = data;
+  const { label, icon, isCompleted, isDisabled, isInactive, isFlowing } = data;
 
   const handleClick = () => {
     if (onComplete && !isDisabled) {
@@ -23,7 +23,8 @@ const HabitNode = memo(({ data, selected, id, onComplete }: HabitNodeProps) => {
         data-testid="habit-node"
         onClick={handleClick}
         className={`
-          px-4 py-2 rounded-lg border-2 transition-all
+          rounded-lg border-2 transition-all relative overflow-hidden
+          ${isFlowing ? 'habit-node-flowing-blue border-0' : 'px-4 py-2'}
           ${isDisabled 
             ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-50' 
             : isInactive
@@ -35,7 +36,13 @@ const HabitNode = memo(({ data, selected, id, onComplete }: HabitNodeProps) => {
           ${selected && !isDisabled ? 'ring-2 ring-blue-500 ring-offset-2' : ''}
         `}
       >
-        <div className="flex items-center gap-2">
+        <div className={`
+          flex items-center gap-2 relative z-10 rounded-md
+          ${isFlowing ? 'px-4 py-2' : ''}
+          ${isFlowing ? (
+            isCompleted ? 'bg-green-50' : 'bg-white'
+          ) : ''}
+        `}>
           {icon && <span className={`text-2xl ${isDisabled || isInactive ? 'grayscale' : ''}`}>{icon}</span>}
           <div className="flex flex-col">
             <span className="font-medium">{label}</span>
