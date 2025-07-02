@@ -9,6 +9,7 @@ import type {
   OnNodesChange,
   OnEdgesChange,
   NodeMouseHandler,
+  Connection,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ClickableHabitNode from '../nodes/ClickableHabitNode';
@@ -31,19 +32,23 @@ const edgeTypes = {
 interface HabitFlowCanvasProps {
   nodes: FlowNode[];
   edges: FlowEdge[];
+  nodeTypes?: any;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   onNodeClick: NodeMouseHandler;
+  isValidConnection?: (connection: Connection) => boolean;
 }
 
 const HabitFlowCanvas = memo(({
   nodes,
   edges,
+  nodeTypes: customNodeTypes,
   onNodesChange,
   onEdgesChange,
   onConnect,
   onNodeClick,
+  isValidConnection,
 }: HabitFlowCanvasProps) => {
   return (
     <FlowProvider edges={edges}>
@@ -54,8 +59,9 @@ const HabitFlowCanvas = memo(({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          nodeTypes={nodeTypes}
+          nodeTypes={customNodeTypes || nodeTypes}
           edgeTypes={edgeTypes}
+          isValidConnection={isValidConnection}
           fitView
         >
           <Controls />

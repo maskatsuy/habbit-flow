@@ -42,7 +42,7 @@ const NodeWrapper = memo(({
         `}
       >
         <div className={`
-          relative z-10 rounded-md
+          relative rounded-md
           ${isFlowing ? `${flowingPadding} ${baseClassName}` : ''}
         `}>
           {children}

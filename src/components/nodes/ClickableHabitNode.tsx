@@ -5,16 +5,21 @@ import type { HabitNodeData } from '../../types';
 import { useFlowContext } from '../../contexts/FlowContext';
 import NodeWrapper from './NodeWrapper';
 
+export interface ClickableHabitNodeProps extends NodeProps<HabitNodeData> {
+  onDoubleClick?: (nodeId: string) => void;
+}
+
 /**
  * クリック可能な習慣ノード
  * ReactFlowのコンテキストを使用して、ノードの更新を直接行う
  */
-const ClickableHabitNode = memo(({ data, selected, id }: NodeProps<HabitNodeData>) => {
+const ClickableHabitNode = memo(({ data, selected, id, onDoubleClick }: ClickableHabitNodeProps) => {
   const { label, icon, isCompleted, isDisabled, isInactive, isFlowing } = data;
   const { setNodes } = useReactFlow();
   const { edges } = useFlowContext();
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
     if (isDisabled) return;
 
     setNodes((nodes) => {
@@ -31,6 +36,7 @@ const ClickableHabitNode = memo(({ data, selected, id }: NodeProps<HabitNodeData
       return nodes.map((node) => {
         // クリックされたノードを更新
         if (node.id === id && node.type === 'habit') {
+          console.log('Updating node:', id, 'from', isCompleted, 'to', !isCompleted);
           return {
             ...node,
             type: 'habit' as const,
@@ -78,6 +84,13 @@ const ClickableHabitNode = memo(({ data, selected, id }: NodeProps<HabitNodeData
     });
   }, [id, isCompleted, isDisabled, setNodes, edges]);
 
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDoubleClick) {
+      onDoubleClick(id);
+    }
+  }, [id, onDoubleClick]);
+
   const getNodeStyle = () => {
     if (isDisabled) return 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-50';
     if (isInactive) return 'border-gray-300 bg-gray-100 text-gray-500 cursor-pointer opacity-60';
@@ -93,7 +106,14 @@ const ClickableHabitNode = memo(({ data, selected, id }: NodeProps<HabitNodeData
       baseClassName={getNodeStyle()}
     >
       <div 
-        onClick={handleClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleClick();
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          handleDoubleClick();
+        }}
         className={`
           flex items-center gap-2 rounded-md cursor-pointer
           ${isFlowing ? (isCompleted ? 'bg-green-50' : 'bg-white') : ''}

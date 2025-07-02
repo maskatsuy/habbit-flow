@@ -72,10 +72,17 @@ describe('HabitNode', () => {
   it('should handle click to toggle completion', async () => {
     const user = userEvent.setup();
     const onComplete = vi.fn();
+    const propsWithOnComplete = {
+      ...mockNodeProps,
+      data: {
+        ...mockNodeProps.data,
+        onComplete,
+      },
+    };
     
     render(
       <ReactFlowProvider>
-        <HabitNode {...mockNodeProps} onComplete={onComplete} />
+        <HabitNode {...propsWithOnComplete} />
       </ReactFlowProvider>
     );
 
