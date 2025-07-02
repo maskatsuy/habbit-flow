@@ -82,7 +82,7 @@
 /* Blue theme flowing border */
 .habit-node-flowing-blue {
   position: relative;
-  padding: 3px;
+  padding: 2px;
   border-radius: 0.5rem;
   background: linear-gradient(
     90deg,
@@ -98,6 +98,11 @@
   );
   background-size: 400% 100%;
   animation: rainbow-flow 4s linear infinite;
+}
+
+/* Ensure handles don't block node clicks */
+.react-flow__handle {
+  z-index: 1;
 }
 
 /* Pulsing glow effect */

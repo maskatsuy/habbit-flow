@@ -11,8 +11,8 @@ export function useHabitFlow(): HabitFlowStore {
 
   const updateNode = useCallback((id: string, updates: Partial<FlowNode>) => {
     setNodes((nds) =>
-      nds.map((node) =>
-        node.id === id ? { ...node, ...updates } : node
+      nds.map((node): FlowNode =>
+        node.id === id ? { ...node, ...updates } as FlowNode : node
       )
     );
   }, []);
@@ -35,17 +35,18 @@ export function useHabitFlow(): HabitFlowStore {
 
   const completeHabit = useCallback((nodeId: string) => {
     setNodes((nds) =>
-      nds.map((node) => {
+      nds.map((node): FlowNode => {
         if (node.id === nodeId && node.type === 'habit') {
           const habitNode = node as HabitNode;
           return {
             ...habitNode,
+            type: 'habit' as const,
             data: {
               ...habitNode.data,
               isCompleted: true,
               completedAt: new Date(),
             },
-          };
+          } as HabitNode;
         }
         return node;
       })
@@ -54,17 +55,18 @@ export function useHabitFlow(): HabitFlowStore {
 
   const resetDailyProgress = useCallback(() => {
     setNodes((nds) =>
-      nds.map((node) => {
+      nds.map((node): FlowNode => {
         if (node.type === 'habit') {
           const habitNode = node as HabitNode;
           return {
             ...habitNode,
+            type: 'habit' as const,
             data: {
               ...habitNode.data,
               isCompleted: false,
               completedAt: null,
             },
-          };
+          } as HabitNode;
         }
         return node;
       })

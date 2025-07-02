@@ -79,8 +79,8 @@ describe('HabitNode', () => {
       </ReactFlowProvider>
     );
 
-    const node = screen.getByTestId('habit-node');
-    await user.click(node);
+    const label = screen.getByText('水を飲む');
+    await user.click(label);
 
     expect(onComplete).toHaveBeenCalledWith('test-node-1');
   });
@@ -99,6 +99,6 @@ describe('HabitNode', () => {
 
     const node = screen.getByTestId('habit-node');
     expect(node).toHaveClass('ring-2');
-    expect(node).toHaveClass('ring-blue-500');
+    expect(node).toHaveClass('ring-offset-2');
   });
 });

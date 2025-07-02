@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useFlowPersistence } from '../hooks/useFlowPersistence';
-import type { FlowSummary } from '../hooks/useFlowPersistence';
+import { useFlowPersistence } from '../../../hooks/useFlowPersistence';
+import type { FlowSummary } from '../../../hooks/useFlowPersistence';
 
 interface FlowManagerProps {
   currentFlow: string;

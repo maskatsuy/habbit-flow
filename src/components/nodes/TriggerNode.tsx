@@ -1,15 +1,17 @@
 import { memo } from 'react';
-import { Handle, Position } from 'reactflow';
+import { Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
+import NodeWrapper from './NodeWrapper';
 
 interface TriggerNodeData {
   label: string;
   triggerType: 'time' | 'event' | 'location';
   icon?: string;
+  isFlowing?: boolean;
 }
 
 const TriggerNode = memo(({ data, selected }: NodeProps<TriggerNodeData>) => {
-  const { label, icon, triggerType } = data;
+  const { label, icon, triggerType, isFlowing } = data;
 
   const getNodeStyle = () => {
     switch (triggerType) {
@@ -24,26 +26,39 @@ const TriggerNode = memo(({ data, selected }: NodeProps<TriggerNodeData>) => {
     }
   };
 
+  const ringColor = selected ? (
+    triggerType === 'time' ? 'ring-blue-500' :
+    triggerType === 'event' ? 'ring-purple-500' :
+    triggerType === 'location' ? 'ring-orange-500' :
+    'ring-gray-500'
+  ) : '';
+
+  const getFlowingBg = () => {
+    if (!isFlowing) return '';
+    switch (triggerType) {
+      case 'time': return 'bg-blue-50';
+      case 'event': return 'bg-purple-50';
+      case 'location': return 'bg-orange-50';
+      default: return 'bg-gray-50';
+    }
+  };
+
   return (
-    <>
-      <div
-        data-testid="trigger-node"
-        className={`
-          px-4 py-2 rounded-lg border-2 transition-all
-          ${getNodeStyle()}
-          ${selected ? 'ring-2 ring-blue-500 ring-offset-2' : ''}
-        `}
-      >
-        <div className="flex items-center gap-2">
-          {icon && <span className="text-2xl">{icon}</span>}
-          <div className="flex flex-col">
-            <span className="text-xs opacity-75">トリガー</span>
-            <span className="font-medium">{label}</span>
-          </div>
+    <NodeWrapper
+      isFlowing={isFlowing}
+      selected={selected}
+      testId="trigger-node"
+      baseClassName={`${getNodeStyle()} ${ringColor}`}
+      handlePosition={{ source: Position.Right }}
+    >
+      <div className={`flex items-center gap-2 rounded-md ${getFlowingBg()}`}>
+        {icon && <span className="text-2xl">{icon}</span>}
+        <div className="flex flex-col">
+          <span className="text-xs opacity-75">トリガー</span>
+          <span className="font-medium">{label}</span>
         </div>
       </div>
-      <Handle type="source" position={Position.Right} />
-    </>
+    </NodeWrapper>
   );
 });
 

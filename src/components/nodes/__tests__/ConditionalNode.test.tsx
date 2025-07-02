@@ -76,6 +76,6 @@ describe('ConditionalNode', () => {
 
     const node = screen.getByTestId('conditional-node');
     expect(node).toHaveClass('ring-2');
-    expect(node).toHaveClass('ring-yellow-500');
+    expect(node).toHaveClass('ring-offset-2');
   });
 });

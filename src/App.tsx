@@ -1,4 +1,4 @@
-import HabitFlow from './components/HabitFlow'
+import HabitFlow from './components/flow/HabitFlow'
 
 function App() {
   return (
