@@ -8,12 +8,13 @@ import {
 import type { Connection, NodeProps } from 'reactflow';
 import { ClickableHabitNode, TriggerNode, ConditionalNode } from '../../nodes';
 import type { ClickableHabitNodeProps } from '../../nodes/ClickableHabitNode';
-import AnimatedHabitEdge from '../../edges/AnimatedHabitEdge';
+import InsertableHabitEdge from '../../edges/InsertableHabitEdge';
 import FlowControls from '../../common/FlowControls';
 import HabitFlowCanvas from '../HabitFlowCanvas';
 import NodeCreator from '../NodeCreator';
 import NodeEditor from '../NodeEditor';
 import NodeDeletion from '../NodeDeletion';
+import InsertNodeModal from '../InsertNodeModal';
 import { useFlowPersistence } from '../../../hooks/useFlowPersistence';
 import { useFlowAnimations } from '../../../hooks/useFlowAnimations';
 import { useHabitReset } from '../../../hooks/useHabitReset';
@@ -21,10 +22,10 @@ import { useFlowKeyboardShortcuts } from '../../../hooks/useFlowKeyboardShortcut
 import { useConnectionValidation } from '../../../hooks/useConnectionValidation';
 import { initialNodes, initialEdges } from '../../../data/sampleFlow';
 import type { FlowNode, FlowEdge, HabitNode as HabitNodeType, HabitNodeData } from '../../../types';
+import { nodeTypes } from './nodeTypes';
+import { edgeTypes } from './edgeTypes';
+import { NodeEditorProvider } from '../../../contexts/NodeEditorContext';
 
-const edgeTypes = {
-  habit: AnimatedHabitEdge,
-};
 
 function HabitFlowInner() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -35,6 +36,8 @@ function HabitFlowInner() {
   const [editingNode, setEditingNode] = useState<HabitNodeType | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedNode, setSelectedNode] = useState<FlowNode | null>(null);
+  const [insertingEdge, setInsertingEdge] = useState<{ edgeId: string; position: { x: number; y: number } } | null>(null);
+  const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
   const lastSavedNodes = useRef(initialNodes);
   const lastSavedEdges = useRef(initialEdges);
   
@@ -139,14 +142,90 @@ function HabitFlowInner() {
     setHasUnsavedChanges(true);
   }, [nodes, setNodes, setEdges]);
 
-  // Node editing handlers
-  const handleNodeDoubleClick = useCallback((nodeId: string) => {
-    const node = nodes.find(n => n.id === nodeId && n.type === 'habit') as HabitNodeType | undefined;
-    if (node) {
-      setEditingNode(node);
-      setIsEditModalOpen(true);
-    }
-  }, [nodes]);
+  // Edge insertion handler
+  const handleInsertNode = useCallback((edgeId: string, position: { x: number; y: number }) => {
+    const edge = edges.find(e => e.id === edgeId);
+    if (!edge) return;
+    
+    setInsertingEdge({ edgeId, position });
+    setIsInsertModalOpen(true);
+  }, [edges]);
+
+  // Handle node creation from edge insertion
+  const handleInsertNodeCreate = useCallback((nodeData: {
+    label: string;
+    description?: string;
+    icon?: string;
+    timing?: string;
+  }) => {
+    if (!insertingEdge) return;
+    
+    const edge = edges.find(e => e.id === insertingEdge.edgeId);
+    if (!edge) return;
+    
+    const nodeId = `habit-${Date.now()}`;
+    
+    // Create new node at the insertion position
+    const newNode: HabitNodeType = {
+      id: nodeId,
+      type: 'habit',
+      position: insertingEdge.position,
+      data: {
+        habitId: nodeId,
+        label: nodeData.label,
+        description: nodeData.description,
+        icon: nodeData.icon || '📝',
+        isCompleted: false,
+        completedAt: null,
+        timing: nodeData.timing,
+      },
+    };
+    
+    // Add the new node
+    setNodes((nds) => [...nds, newNode]);
+    
+    // Remove the old edge and create two new edges
+    setEdges((eds) => {
+      const filteredEdges = eds.filter(e => e.id !== insertingEdge.edgeId);
+      
+      const newEdge1: FlowEdge = {
+        id: `edge-${Date.now()}-1`,
+        source: edge.source,
+        target: nodeId,
+        type: 'habit',
+        data: edge.data,
+      };
+      
+      const newEdge2: FlowEdge = {
+        id: `edge-${Date.now()}-2`,
+        source: nodeId,
+        target: edge.target,
+        type: 'habit',
+        data: {
+          trigger: 'after',
+          condition: null,
+        },
+      };
+      
+      return [...filteredEdges, newEdge1, newEdge2];
+    });
+    
+    setHasUnsavedChanges(true);
+    setIsInsertModalOpen(false);
+    setInsertingEdge(null);
+  }, [insertingEdge, edges, setNodes, setEdges]);
+
+  // Node editing handlers (only for Shift+double click)
+  const handleNodeEdit = useCallback((nodeId: string) => {
+    setNodes((currentNodes) => {
+      const node = currentNodes.find(n => n.id === nodeId && n.type === 'habit') as HabitNodeType | undefined;
+      if (node) {
+        setEditingNode(node);
+        setIsEditModalOpen(true);
+      }
+      return currentNodes; // 変更なし
+    });
+  }, [setNodes]);
 
   const handleNodeEditSave = useCallback((updatedNode: HabitNodeType) => {
     setNodes((nds) => 
@@ -312,18 +391,10 @@ function HabitFlowInner() {
     onSaveAs: handleSaveAs,
   });
 
-  // Create node types with double-click handler
-  const nodeTypes = useMemo(() => ({
-    habit: (props: NodeProps<HabitNodeData>) => (
-      <ClickableHabitNode {...props} onDoubleClick={handleNodeDoubleClick} />
-    ),
-    trigger: TriggerNode,
-    conditional: ConditionalNode,
-  }), [handleNodeDoubleClick]);
-
   return (
-    <div className="w-full">
-      <div className="flex gap-2 mb-4 items-center">
+    <NodeEditorProvider onEditNode={handleNodeEdit} onInsertNode={handleInsertNode}>
+      <div className="w-full">
+        <div className="flex gap-2 mb-4 items-center">
         <FlowControls
           flowName={flowName}
           savedFlows={savedFlows}
@@ -357,6 +428,7 @@ function HabitFlowInner() {
           nodes={animatedNodes}
           edges={animatedEdges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -371,13 +443,32 @@ function HabitFlowInner() {
           />
         )}
       </div>
-      <NodeEditor
+        <NodeEditor
         node={editingNode}
         isOpen={isEditModalOpen}
         onClose={handleNodeEditClose}
         onSave={handleNodeEditSave}
       />
-    </div>
+      <InsertNodeModal
+        isOpen={isInsertModalOpen}
+        onClose={() => {
+          setIsInsertModalOpen(false);
+          setInsertingEdge(null);
+        }}
+        onCreateNode={handleInsertNodeCreate}
+        sourceNodeLabel={
+          insertingEdge 
+            ? nodes.find(n => n.id === edges.find(e => e.id === insertingEdge.edgeId)?.source)?.data.label
+            : undefined
+        }
+        targetNodeLabel={
+          insertingEdge
+            ? nodes.find(n => n.id === edges.find(e => e.id === insertingEdge.edgeId)?.target)?.data.label
+            : undefined
+        }
+        />
+      </div>
+    </NodeEditorProvider>
   );
 }
 

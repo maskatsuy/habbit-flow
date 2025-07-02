@@ -3,23 +3,34 @@ import { useReactFlow } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { HabitNodeData } from '../../types';
 import { useFlowContext } from '../../contexts/FlowContext';
+import { useNodeEditor } from '../../contexts/NodeEditorContext';
 import NodeWrapper from './NodeWrapper';
 
 export interface ClickableHabitNodeProps extends NodeProps<HabitNodeData> {
-  onDoubleClick?: (nodeId: string) => void;
+  onEditNode?: (nodeId: string) => void;
 }
 
 /**
  * クリック可能な習慣ノード
  * ReactFlowのコンテキストを使用して、ノードの更新を直接行う
  */
-const ClickableHabitNode = memo(({ data, selected, id, onDoubleClick }: ClickableHabitNodeProps) => {
+const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps) => {
   const { label, icon, isCompleted, isDisabled, isInactive, isFlowing } = data;
   const { setNodes } = useReactFlow();
   const { edges } = useFlowContext();
+  const { onEditNode } = useNodeEditor();
 
-  const handleClick = useCallback((e: React.MouseEvent) => {
+  // ダブルクリックで完了/未完了を切り替え + 編集
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // Shiftキーを押しながらダブルクリックで編集
+    if (e.shiftKey && onEditNode) {
+      onEditNode(id);
+      return;
+    }
+    
+    // 通常のダブルクリックで完了/未完了切り替え
     if (isDisabled) return;
 
     setNodes((nodes) => {
@@ -34,9 +45,9 @@ const ClickableHabitNode = memo(({ data, selected, id, onDoubleClick }: Clickabl
       );
 
       return nodes.map((node) => {
-        // クリックされたノードを更新
+        // ダブルクリックされたノードを更新
         if (node.id === id && node.type === 'habit') {
-          console.log('Updating node:', id, 'from', isCompleted, 'to', !isCompleted);
+          console.log('Updating node completion:', id, 'from', isCompleted, 'to', !isCompleted);
           return {
             ...node,
             type: 'habit' as const,
@@ -82,20 +93,13 @@ const ClickableHabitNode = memo(({ data, selected, id, onDoubleClick }: Clickabl
         return node;
       });
     });
-  }, [id, isCompleted, isDisabled, setNodes, edges]);
-
-  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onDoubleClick) {
-      onDoubleClick(id);
-    }
-  }, [id, onDoubleClick]);
+  }, [id, isCompleted, isDisabled, setNodes, edges, onEditNode]);
 
   const getNodeStyle = () => {
     if (isDisabled) return 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-50';
-    if (isInactive) return 'border-gray-300 bg-gray-100 text-gray-500 cursor-pointer opacity-60';
-    if (isCompleted) return 'border-green-500 bg-green-50 text-green-800 cursor-pointer';
-    return 'border-gray-300 bg-white text-gray-800 cursor-pointer hover:shadow-md';
+    if (isInactive) return 'border-gray-300 bg-gray-100 text-gray-500 cursor-pointer opacity-60 hover:opacity-80';
+    if (isCompleted) return 'border-green-500 bg-green-50 text-green-800 cursor-pointer hover:bg-green-100';
+    return 'border-gray-300 bg-white text-gray-800 cursor-pointer hover:shadow-md hover:border-gray-400';
   };
 
   return (
@@ -106,18 +110,12 @@ const ClickableHabitNode = memo(({ data, selected, id, onDoubleClick }: Clickabl
       baseClassName={getNodeStyle()}
     >
       <div 
-        onClick={(e) => {
-          e.stopPropagation();
-          handleClick();
-        }}
-        onDoubleClick={(e) => {
-          e.stopPropagation();
-          handleDoubleClick();
-        }}
+        onDoubleClick={handleDoubleClick}
         className={`
-          flex items-center gap-2 rounded-md cursor-pointer
+          flex items-center gap-2 rounded-md cursor-pointer select-none
           ${isFlowing ? (isCompleted ? 'bg-green-50' : 'bg-white') : ''}
         `}
+        title="ダブルクリックで完了/未完了を切り替え、Shift+ダブルクリックで編集"
       >
         {icon && <span className={`text-2xl ${isDisabled || isInactive ? 'grayscale' : ''}`}>{icon}</span>}
         <div className="flex flex-col select-none">
