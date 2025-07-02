@@ -1,7 +1,7 @@
 import type { Node, NodeProps } from 'reactflow';
 import type { HabitNode, HabitEdge, HabitNodeData } from './habit';
 
-export type FlowNode = HabitNode | Node<unknown, 'trigger'>;
+export type FlowNode = HabitNode | Node<unknown, 'trigger'> | Node<unknown, 'conditional'>;
 export type FlowEdge = HabitEdge;
 
 export interface HabitFlowState {

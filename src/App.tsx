@@ -1,4 +1,4 @@
-import FlowDemo from './components/FlowDemo'
+import HabitFlow from './components/flow/HabitFlow'
 
 function App() {
   return (
@@ -24,10 +24,13 @@ function App() {
         
         <div className="mt-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
-            React Flow 動作確認
+            習慣フロー
           </h2>
-          <div className="bg-white rounded-lg shadow">
-            <FlowDemo />
+          <p className="text-gray-600 mb-4">
+            ノードをクリックして習慣を完了にできます
+          </p>
+          <div className="bg-white rounded-lg shadow p-4">
+            <HabitFlow />
           </div>
         </div>
       </div>
