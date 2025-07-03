@@ -124,8 +124,11 @@ export function useFlowAnimations(nodes: FlowNode[], edges: FlowEdge[]) {
           
         const conditionalPath = findConditionalPath(node.id);
         
+        // マージポイントは条件分岐の影響を受けない
+        const incomingEdgeCount = edges.filter(e => e.target === node.id).length;
+        const isMergePoint = incomingEdgeCount > 1;
         
-        if (conditionalPath) {
+        if (conditionalPath && !isMergePoint) {
           // パス上の完了ノードをチェックする関数（条件分岐から始まって、合流点まで）
           const checkPathForCompletedNodes = (startEdge: any): boolean => {
             const nodesInPath = new Set<string>();
