@@ -1,0 +1,16 @@
+# This is a CODEOWNERS file
+# Each line is a file pattern followed by one or more owners.
+
+# Default owners for everything in the repo
+* @maskatsuy
+
+# Frontend specific owners
+/src/ @maskatsuy
+*.tsx @maskatsuy
+*.ts @maskatsuy
+
+# Configuration files
+/.github/ @maskatsuy
+/package.json @maskatsuy
+/tsconfig.json @maskatsuy
+/vite.config.ts @maskatsuy

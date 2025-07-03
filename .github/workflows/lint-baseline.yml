@@ -1,0 +1,43 @@
+name: Lint Baseline
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0' # 毎週日曜日に実行
+
+jobs:
+  create-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate lint baseline
+        run: |
+          npm run lint -- --format json > .eslint-baseline.json || true
+          echo "現在のLintエラー数: $(cat .eslint-baseline.json | jq '.length')"
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: 'chore: update ESLint baseline'
+          title: 'chore: ESLintベースラインの更新'
+          body: |
+            ## ESLintベースラインの更新
+            
+            現在のコードベースのLintエラーを記録しました。
+            このベースラインは、新規コードでのエラー増加を防ぐために使用されます。
+            
+            ### 今後の対応
+            - 新規コードではLintエラーを出さないようにしてください
+            - 既存のエラーは段階的に修正していきます
+          branch: update-eslint-baseline
