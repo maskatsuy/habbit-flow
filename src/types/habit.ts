@@ -26,6 +26,7 @@ export interface HabitNodeData {
   isDisabled?: boolean;
   isInactive?: boolean;
   isFlowing?: boolean;
+  canDelete?: boolean;
 }
 
 export type HabitNode = Node<HabitNodeData, 'habit'>;

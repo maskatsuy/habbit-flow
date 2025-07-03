@@ -15,7 +15,7 @@ export interface ClickableHabitNodeProps extends NodeProps<HabitNodeData> {
  * ReactFlowのコンテキストを使用して、ノードの更新を直接行う
  */
 const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps) => {
-  const { label, icon, isCompleted, isDisabled, isInactive, isFlowing } = data;
+  const { label, icon, isCompleted, isDisabled, isInactive, isFlowing, canDelete } = data;
   const { setNodes } = useReactFlow();
   const { edges } = useFlowContext();
   const { onEditNode } = useNodeEditor();
@@ -157,6 +157,7 @@ const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps
     <NodeWrapper
       isFlowing={isFlowing}
       selected={selected && !isDisabled}
+      canDelete={canDelete}
       testId="habit-node"
       baseClassName={getNodeStyle()}
     >

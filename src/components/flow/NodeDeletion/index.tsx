@@ -4,9 +4,10 @@ import type { FlowNode } from '../../../types';
 interface NodeDeletionProps {
   selectedNode: FlowNode | null;
   onDelete: (nodeId: string) => void;
+  canDelete?: boolean;
 }
 
-const NodeDeletion = memo(({ selectedNode, onDelete }: NodeDeletionProps) => {
+const NodeDeletion = memo(({ selectedNode, onDelete, canDelete = true }: NodeDeletionProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // Only allow deletion of habit nodes (not trigger or conditional nodes)
@@ -29,13 +30,20 @@ const NodeDeletion = memo(({ selectedNode, onDelete }: NodeDeletionProps) => {
 
   return (
     <>
-      <button
-        onClick={handleDeleteClick}
-        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors flex items-center gap-2"
-        title="ノードを削除 (Delete)"
-      >
-        🗑️ 削除
-      </button>
+      <div className="absolute bottom-4 right-4 z-10">
+        <button
+          onClick={handleDeleteClick}
+          className={`px-4 py-2 rounded-md transition-colors flex items-center gap-2 shadow-lg ${
+            canDelete 
+              ? 'bg-red-500 text-white hover:bg-red-600 cursor-pointer' 
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+          title={canDelete ? "ノードを削除 (Delete)" : "このノードは削除できません"}
+          disabled={!canDelete}
+        >
+          🗑️ 削除
+        </button>
+      </div>
 
       {showConfirmDialog && (
         <div

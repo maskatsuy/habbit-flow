@@ -51,6 +51,8 @@ const HabitFlowCanvas = memo(({
           edgeTypes={customEdgeTypes}
           isValidConnection={isValidConnection}
           fitView
+          selectNodesOnDrag={false}
+          multiSelectionKeyCode={null}
         >
           <Controls />
           <MiniMap />
