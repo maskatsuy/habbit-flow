@@ -296,10 +296,14 @@ function HabitFlowInner() {
       return { isConditionalPath: false };
     };
     
+    // マージポイント（複数の入力を持つノード）は条件分岐の制約から除外
+    const incomingEdgeCount = incomingEdges.length;
+    const isMergePoint = incomingEdgeCount > 1;
+    
     // 削除しようとしているノードが条件分岐のパスに属しているかチェック
     const pathInfo = isPartOfConditionalPath(nodeId);
     
-    if (pathInfo.isConditionalPath && pathInfo.conditionalId && pathInfo.handle) {
+    if (!isMergePoint && pathInfo.isConditionalPath && pathInfo.conditionalId && pathInfo.handle) {
       // 同じ条件分岐の同じハンドルから始まるパス上のhabitノードを数える
       const countHabitNodesInConditionalPath = (): number => {
         let count = 0;
