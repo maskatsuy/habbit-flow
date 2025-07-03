@@ -45,13 +45,20 @@ describe('Node Deletion Logic', () => {
       return { isConditionalPath: false };
     };
     
-    // マージポイント（複数の入力を持つノード）は条件分岐の制約から除外
+    // マージポイント（複数の入力を持つノード）は削除できない
     const incomingEdgeCount = edges.filter(e => e.target === nodeIdToDelete).length;
     const isMergePoint = incomingEdgeCount > 1;
     
+    if (isMergePoint) {
+      return {
+        canDelete: false,
+        alertMessage: 'マージポイント（複数の入力を持つノード）は削除できません'
+      };
+    }
+    
     const pathInfo = isPartOfConditionalPath(nodeIdToDelete);
     
-    if (!isMergePoint && pathInfo.isConditionalPath && pathInfo.conditionalId && pathInfo.handle) {
+    if (pathInfo.isConditionalPath && pathInfo.conditionalId && pathInfo.handle) {
       // 同じ条件分岐の同じハンドルから始まるパス上のhabitノードを数える
       const countHabitNodesInConditionalPath = (): number => {
         let count = 0;
@@ -297,7 +304,29 @@ describe('Node Deletion Logic', () => {
       expect(newEdge?.sourceHandle).toBe('yes');
     });
 
-    it('マージポイントの削除で両パスが次のノードに接続される', () => {
+    it('マージポイント（合流点）は削除できない', () => {
+      const builder = new FlowBuilder();
+      builder
+        .addConditionalPattern(
+          'trigger1',
+          'weather1',
+          ['jog1'],
+          ['bike1']
+        )
+        .addHabit('shower1', { label: 'シャワー' })
+        .addEdge('jog1', 'shower1')
+        .addEdge('bike1', 'shower1');
+
+      const { nodes, edges } = builder.build();
+      
+      const result = testNodeDeletion(nodes, edges, 'shower1');
+      
+      // マージポイントは削除できないべき
+      expect(result.canDelete).toBe(false);
+      expect(result.alertMessage).toBe('マージポイント（複数の入力を持つノード）は削除できません');
+    });
+
+    it('マージポイントの後にノードがある場合も削除できない', () => {
       const builder = new FlowBuilder();
       builder
         .addConditionalPattern(
@@ -316,20 +345,9 @@ describe('Node Deletion Logic', () => {
       
       const result = testNodeDeletion(nodes, edges, 'shower1');
       
-      // マージポイントは条件分岐のパスチェックから除外されるべき
-      expect(result.canDelete).toBe(true);
-      expect(result.updatedEdges).toContainEqual(
-        expect.objectContaining({
-          source: 'jog1',
-          target: 'breakfast1',
-        })
-      );
-      expect(result.updatedEdges).toContainEqual(
-        expect.objectContaining({
-          source: 'bike1',
-          target: 'breakfast1',
-        })
-      );
+      // マージポイントは削除できないべき
+      expect(result.canDelete).toBe(false);
+      expect(result.alertMessage).toBe('マージポイント（複数の入力を持つノード）は削除できません');
     });
   });
 });

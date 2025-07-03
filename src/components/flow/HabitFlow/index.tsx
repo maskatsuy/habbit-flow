@@ -4,6 +4,7 @@ import {
   useNodesState,
   useEdgesState,
   ReactFlowProvider,
+  useReactFlow,
 } from 'reactflow';
 import type { Connection, NodeProps } from 'reactflow';
 import { ClickableHabitNode, TriggerNode, ConditionalNode } from '../../nodes';
@@ -254,6 +255,14 @@ function HabitFlowInner() {
     // Find incoming edges
     const incomingEdges = edges.filter(e => e.target === nodeId);
     
+    // マージポイント（複数の入力を持つノード）は削除できない
+    const incomingEdgeCount = incomingEdges.length;
+    const isMergePoint = incomingEdgeCount > 1;
+    
+    if (isMergePoint) {
+      return { canDelete: false, reason: 'マージポイント（複数の入力を持つノード）は削除できません' };
+    }
+    
     // 削除しようとしているノードが条件分岐に属しているかチェック
     const isPartOfConditionalPath = (nodeId: string): { isConditionalPath: boolean; conditionalId?: string; handle?: string } => {
       const visited = new Set<string>();
@@ -284,14 +293,10 @@ function HabitFlowInner() {
       return { isConditionalPath: false };
     };
     
-    // マージポイント（複数の入力を持つノード）は条件分岐の制約から除外
-    const incomingEdgeCount = incomingEdges.length;
-    const isMergePoint = incomingEdgeCount > 1;
-    
     // 削除しようとしているノードが条件分岐のパスに属しているかチェック
     const pathInfo = isPartOfConditionalPath(nodeId);
     
-    if (!isMergePoint && pathInfo.isConditionalPath && pathInfo.conditionalId && pathInfo.handle) {
+    if (pathInfo.isConditionalPath && pathInfo.conditionalId && pathInfo.handle) {
       // 同じ条件分岐の同じハンドルから始まるパス上のhabitノードを数える
       const countHabitNodesInConditionalPath = (): number => {
         let count = 0;
@@ -709,12 +714,25 @@ function HabitFlowInner() {
             ? checkNodeDeletability(selectedNode.id) 
             : { canDelete: false, reason: '習慣ノードのみ削除可能です' };
           
+          // ノードの位置を取得
+          const nodePosition = selectedNode.position;
+          const nodeWidth = 200; // ノードの幅の推定値
+          const panelWidth = 288; // パネルの幅 (w-72 = 18rem = 288px)
+          const canvasElement = document.querySelector('.react-flow');
+          const canvasRect = canvasElement?.getBoundingClientRect();
+          const canvasWidth = canvasRect?.width || window.innerWidth;
+          
+          // ノードの中心位置がキャンバスの右側1/3にある場合は左側に表示
+          const nodeCenter = nodePosition.x + nodeWidth / 2;
+          const isRightSide = nodeCenter > (canvasWidth * 2) / 3;
+          
           return (
             <NodeInfoPanel
               selectedNode={selectedNode}
               canDelete={deletability.canDelete}
               deleteReason={deletability.reason}
               onDelete={() => handleNodeDelete(selectedNode.id)}
+              position={isRightSide ? 'left' : 'right'}
             />
           );
         })()}

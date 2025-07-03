@@ -6,9 +6,10 @@ interface NodeInfoPanelProps {
   canDelete: boolean;
   deleteReason?: string;
   onDelete: () => void;
+  position?: 'left' | 'right';
 }
 
-const NodeInfoPanel = memo(({ selectedNode, canDelete, deleteReason, onDelete }: NodeInfoPanelProps) => {
+const NodeInfoPanel = memo(({ selectedNode, canDelete, deleteReason, onDelete, position = 'right' }: NodeInfoPanelProps) => {
   if (!selectedNode) return null;
 
   const getNodeTypeLabel = () => {
@@ -35,8 +36,25 @@ const NodeInfoPanel = memo(({ selectedNode, canDelete, deleteReason, onDelete }:
     return '未完了';
   };
 
+  const positionClasses = position === 'left'
+    ? 'left-4'
+    : 'right-4';
+
   return (
-    <div className="absolute top-4 right-4 z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-72">
+    <div className={`absolute top-4 ${positionClasses} z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-72`}>
+      {/* 矢印インジケーター */}
+      <div 
+        className={`absolute top-8 ${position === 'left' ? '-right-2' : '-left-2'} w-0 h-0 
+          border-t-[8px] border-t-transparent
+          border-b-[8px] border-b-transparent
+          ${position === 'left' ? 'border-l-[8px] border-l-white' : 'border-r-[8px] border-r-white'}`}
+      />
+      <div 
+        className={`absolute top-8 ${position === 'left' ? '-right-[9px]' : '-left-[9px]'} w-0 h-0 
+          border-t-[8px] border-t-transparent
+          border-b-[8px] border-b-transparent
+          ${position === 'left' ? 'border-l-[8px] border-l-gray-200' : 'border-r-[8px] border-r-gray-200'}`}
+      />
       <h3 className="text-sm font-semibold text-gray-700 mb-3">選択中のノード</h3>
       
       <div className="space-y-2">
