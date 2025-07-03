@@ -33,7 +33,7 @@ const FlowControls = memo(({
   onReset,
 }: FlowControlsProps) => {
   return (
-    <div className="flex gap-2 mb-4 items-center flex-wrap">
+    <div className="flex gap-2 items-center flex-wrap flex-1">
       <div className="flex items-center gap-2">
         <FlowSelector
           currentFlow={flowName}

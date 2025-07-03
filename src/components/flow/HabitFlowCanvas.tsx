@@ -9,41 +9,34 @@ import type {
   OnNodesChange,
   OnEdgesChange,
   NodeMouseHandler,
+  Connection,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import ClickableHabitNode from '../nodes/ClickableHabitNode';
-import TriggerNode from '../nodes/TriggerNode';
-import ConditionalNode from '../nodes/ConditionalNode';
-import AnimatedHabitEdge from '../edges/AnimatedHabitEdge';
 import { FlowProvider } from '../../contexts/FlowContext';
 import type { FlowNode, FlowEdge } from '../../types';
-
-const nodeTypes = {
-  habit: ClickableHabitNode,
-  trigger: TriggerNode,
-  conditional: ConditionalNode,
-};
-
-const edgeTypes = {
-  habit: AnimatedHabitEdge,
-};
 
 interface HabitFlowCanvasProps {
   nodes: FlowNode[];
   edges: FlowEdge[];
+  nodeTypes?: any;
+  edgeTypes?: any;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   onNodeClick: NodeMouseHandler;
+  isValidConnection?: (connection: Connection) => boolean;
 }
 
 const HabitFlowCanvas = memo(({
   nodes,
   edges,
+  nodeTypes: customNodeTypes,
+  edgeTypes: customEdgeTypes,
   onNodesChange,
   onEdgesChange,
   onConnect,
   onNodeClick,
+  isValidConnection,
 }: HabitFlowCanvasProps) => {
   return (
     <FlowProvider edges={edges}>
@@ -54,9 +47,12 @@ const HabitFlowCanvas = memo(({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
+          nodeTypes={customNodeTypes}
+          edgeTypes={customEdgeTypes}
+          isValidConnection={isValidConnection}
           fitView
+          selectNodesOnDrag={false}
+          multiSelectionKeyCode={null}
         >
           <Controls />
           <MiniMap />

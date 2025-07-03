@@ -5,6 +5,7 @@ interface NodeWrapperProps {
   children: ReactNode;
   isFlowing?: boolean;
   selected?: boolean;
+  canDelete?: boolean;
   testId?: string;
   baseClassName?: string;
   flowingPadding?: string;
@@ -19,6 +20,7 @@ const NodeWrapper = memo(({
   children,
   isFlowing = false,
   selected = false,
+  canDelete,
   testId,
   baseClassName = '',
   flowingPadding = 'px-4 py-2',
@@ -38,11 +40,11 @@ const NodeWrapper = memo(({
         className={`
           rounded-lg transition-all relative
           ${isFlowing ? 'habit-node-flowing-blue' : `border-2 ${flowingPadding} ${baseClassName}`}
-          ${selected ? 'ring-2 ring-offset-2' : ''}
+          ${selected ? `ring-2 ring-offset-2 ${canDelete === false ? 'ring-orange-500' : 'ring-blue-500'}` : ''}
         `}
       >
         <div className={`
-          relative z-10 rounded-md
+          relative rounded-md
           ${isFlowing ? `${flowingPadding} ${baseClassName}` : ''}
         `}>
           {children}
