@@ -1,5 +1,6 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { FlowNode } from '../../../types';
+import { ArrowConnector } from './ArrowConnector';
 
 interface NodeInfoPanelProps {
   selectedNode: FlowNode | null;
@@ -7,9 +8,15 @@ interface NodeInfoPanelProps {
   deleteReason?: string;
   onDelete: () => void;
   position?: 'left' | 'right';
+  nodePosition?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }
 
-const NodeInfoPanel = memo(({ selectedNode, canDelete, deleteReason, onDelete, position = 'right' }: NodeInfoPanelProps) => {
+const NodeInfoPanel = memo(({ selectedNode, canDelete, deleteReason, onDelete, position = 'right', nodePosition }: NodeInfoPanelProps) => {
   if (!selectedNode) return null;
 
   const getNodeTypeLabel = () => {
@@ -36,25 +43,25 @@ const NodeInfoPanel = memo(({ selectedNode, canDelete, deleteReason, onDelete, p
     return '未完了';
   };
 
+  const panelRef = useRef<HTMLDivElement>(null);
+
   const positionClasses = position === 'left'
     ? 'left-4'
     : 'right-4';
 
   return (
-    <div className={`absolute top-4 ${positionClasses} z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-72`}>
-      {/* 矢印インジケーター */}
-      <div 
-        className={`absolute top-8 ${position === 'left' ? '-right-2' : '-left-2'} w-0 h-0 
-          border-t-[8px] border-t-transparent
-          border-b-[8px] border-b-transparent
-          ${position === 'left' ? 'border-l-[8px] border-l-white' : 'border-r-[8px] border-r-white'}`}
+    <>
+      {/* 動的な矢印コネクター */}
+      <ArrowConnector 
+        panelRef={panelRef}
+        targetNodeId={selectedNode.id}
+        position={position}
       />
+      
       <div 
-        className={`absolute top-8 ${position === 'left' ? '-right-[9px]' : '-left-[9px]'} w-0 h-0 
-          border-t-[8px] border-t-transparent
-          border-b-[8px] border-b-transparent
-          ${position === 'left' ? 'border-l-[8px] border-l-gray-200' : 'border-r-[8px] border-r-gray-200'}`}
-      />
+        ref={panelRef}
+        className={`absolute top-4 ${positionClasses} z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-72`}
+      >
       <h3 className="text-sm font-semibold text-gray-700 mb-3">選択中のノード</h3>
       
       <div className="space-y-2">
@@ -97,6 +104,7 @@ const NodeInfoPanel = memo(({ selectedNode, canDelete, deleteReason, onDelete, p
         </>
       )}
     </div>
+    </>
   );
 });
 

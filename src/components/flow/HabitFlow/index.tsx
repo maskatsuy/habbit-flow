@@ -733,6 +733,12 @@ function HabitFlowInner() {
               deleteReason={deletability.reason}
               onDelete={() => handleNodeDelete(selectedNode.id)}
               position={isRightSide ? 'left' : 'right'}
+              nodePosition={{
+                x: nodePosition.x,
+                y: nodePosition.y,
+                width: nodeWidth,
+                height: 80 // ノードの高さの推定値
+              }}
             />
           );
         })()}
