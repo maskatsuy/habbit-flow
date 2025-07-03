@@ -89,15 +89,8 @@ export function useFlowAnimations(nodes: FlowNode[], edges: FlowEdge[]) {
         const outgoingEdges = edges.filter(e => e.source === node.id);
         const isTerminalNode = outgoingEdges.length === 0;
         
-        if (isTerminalNode) {
-          return {
-            ...habitNode,
-            data: {
-              ...habitNode.data,
-              isFlowing: habitNode.data.isCompleted,
-            },
-          };
-        }
+        // 終端ノードでも条件分岐のパスチェックは必要
+        // （終端ノードであってもisInactiveの判定は行う）
         
         // isInactiveの状態を動的に計算
         let isInactive = false;
@@ -130,6 +123,7 @@ export function useFlowAnimations(nodes: FlowNode[], edges: FlowEdge[]) {
           };
           
         const conditionalPath = findConditionalPath(node.id);
+        
         
         if (conditionalPath) {
           // パス上の完了ノードをチェックする関数（条件分岐から始まって、合流点まで）
@@ -193,6 +187,7 @@ export function useFlowAnimations(nodes: FlowNode[], edges: FlowEdge[]) {
           // 他のパスに完了ノードがあるかチェック
           const hasCompletedNodeInOtherPath = otherPathEdges.some(edge => checkPathForCompletedNodes(edge));
           
+          
           // 非アクティブの判定：
           // 完了したノードは常にアクティブ
           if (habitNode.data.isCompleted) {
@@ -216,7 +211,7 @@ export function useFlowAnimations(nodes: FlowNode[], edges: FlowEdge[]) {
           data: {
             ...habitNode.data,
             isInactive,
-            isFlowing: incomingActive && outgoingActive,
+            isFlowing: isTerminalNode ? habitNode.data.isCompleted : (incomingActive && outgoingActive),
           },
         };
       }

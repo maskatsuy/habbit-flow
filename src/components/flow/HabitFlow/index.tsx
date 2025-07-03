@@ -191,6 +191,7 @@ function HabitFlowInner() {
       const newEdge1: FlowEdge = {
         id: `edge-${Date.now()}-1`,
         source: edge.source,
+        sourceHandle: edge.sourceHandle, // sourceHandleを保持
         target: nodeId,
         type: 'habit',
         data: edge.data,
