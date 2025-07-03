@@ -261,17 +261,156 @@ function HabitFlowInner() {
 
   // Node deletion handler
   const handleNodeDelete = useCallback((nodeId: string) => {
+    // 削除するノードに接続されているエッジを取得
+    const incomingEdges = edges.filter(edge => edge.target === nodeId);
+    const outgoingEdges = edges.filter(edge => edge.source === nodeId);
+    
+    // 条件分岐のパスチェック用の関数
+    const isPartOfConditionalPath = (nodeId: string): { isConditionalPath: boolean; conditionalId?: string; handle?: string } => {
+      // このノードに至るまでのパスを遡って条件分岐を探す
+      const visited = new Set<string>();
+      const queue: string[] = [nodeId];
+      
+      while (queue.length > 0) {
+        const currentId = queue.shift()!;
+        if (visited.has(currentId)) continue;
+        visited.add(currentId);
+        
+        // このノードへの入力エッジを取得
+        const incomingEdges = edges.filter(e => e.target === currentId);
+        
+        for (const edge of incomingEdges) {
+          const sourceNode = nodes.find(n => n.id === edge.source);
+          if (sourceNode?.type === 'conditional') {
+            return {
+              isConditionalPath: true,
+              conditionalId: edge.source,
+              handle: edge.sourceHandle
+            };
+          }
+          // さらに上流を探索
+          queue.push(edge.source);
+        }
+      }
+      
+      return { isConditionalPath: false };
+    };
+    
+    // 削除しようとしているノードが条件分岐のパスに属しているかチェック
+    const pathInfo = isPartOfConditionalPath(nodeId);
+    
+    if (pathInfo.isConditionalPath && pathInfo.conditionalId && pathInfo.handle) {
+      // 同じ条件分岐の同じハンドルから始まるパス上のhabitノードを数える
+      const countHabitNodesInConditionalPath = (): number => {
+        let count = 0;
+        const visited = new Set<string>();
+        
+        // 条件分岐から特定のハンドルで出ているエッジを見つける
+        const startEdge = edges.find(e => 
+          e.source === pathInfo.conditionalId && 
+          e.sourceHandle === pathInfo.handle
+        );
+        
+        if (!startEdge) return 0;
+        
+        // そのパス上のノードを辿る（合流点は含めない）
+        const traverse = (nodeId: string) => {
+          if (visited.has(nodeId)) return;
+          visited.add(nodeId);
+          
+          const node = nodes.find(n => n.id === nodeId);
+          
+          // このノードへの入力エッジ数をチェック（合流点の検出）
+          const incomingEdgeCount = edges.filter(e => e.target === nodeId).length;
+          
+          // 合流点（複数の入力を持つノード）に到達したら、それ以降は数えない
+          if (incomingEdgeCount > 1) {
+            return;
+          }
+          
+          if (node?.type === 'habit') {
+            count++;
+          }
+          
+          // 下流のノードを辿る（ただし他の条件分岐は越えない）
+          const outgoingEdges = edges.filter(e => e.source === nodeId);
+          for (const edge of outgoingEdges) {
+            const targetNode = nodes.find(n => n.id === edge.target);
+            if (targetNode && targetNode.type !== 'conditional') {
+              traverse(edge.target);
+            }
+          }
+        };
+        
+        traverse(startEdge.target);
+        return count;
+      };
+      
+      const habitNodeCount = countHabitNodesInConditionalPath();
+      
+      if (habitNodeCount <= 1) {
+        alert('条件分岐の各パスには最低1つのノードが必要です。このノードは削除できません。');
+        return;
+      }
+    }
+    
     // Remove the node
     setNodes((nds) => nds.filter((node) => node.id !== nodeId));
     
-    // Remove edges connected to this node
-    setEdges((eds) => eds.filter((edge) => 
-      edge.source !== nodeId && edge.target !== nodeId
-    ));
+    // Remove edges connected to this node and create new connections
+    setEdges((eds) => {
+      // 削除するノードに関連するエッジを除外
+      const filteredEdges = eds.filter((edge) => 
+        edge.source !== nodeId && edge.target !== nodeId
+      );
+      
+      // 前後のノードを再接続する新しいエッジを作成
+      const newEdges: FlowEdge[] = [];
+      
+      // 削除するノードが中間にある場合の処理
+      if (incomingEdges.length > 0 && outgoingEdges.length > 0) {
+        // 各入力エッジに対して処理
+        incomingEdges.forEach(inEdge => {
+          const sourceNode = nodes.find(n => n.id === inEdge.source);
+          
+          // 入力元が条件分岐ノードの場合、sourceHandleを保持する必要がある
+          if (sourceNode?.type === 'conditional') {
+            outgoingEdges.forEach(outEdge => {
+              const newEdge: FlowEdge = {
+                id: `edge-${Date.now()}-${Math.random()}`,
+                source: inEdge.source,
+                sourceHandle: inEdge.sourceHandle, // 条件分岐のハンドルを保持
+                target: outEdge.target,
+                type: 'habit',
+                data: inEdge.data, // 元のエッジのデータ（条件など）を保持
+              };
+              newEdges.push(newEdge);
+            });
+          } else {
+            // 通常のノードからの接続
+            outgoingEdges.forEach(outEdge => {
+              const newEdge: FlowEdge = {
+                id: `edge-${Date.now()}-${Math.random()}`,
+                source: inEdge.source,
+                target: outEdge.target,
+                type: 'habit',
+                data: {
+                  trigger: 'after',
+                  condition: null,
+                },
+              };
+              newEdges.push(newEdge);
+            });
+          }
+        });
+      }
+      
+      return [...filteredEdges, ...newEdges];
+    });
     
     setHasUnsavedChanges(true);
     setSelectedNode(null);
-  }, [setNodes, setEdges]);
+  }, [nodes, edges, setNodes, setEdges]);
 
   // Save handlers
   const handleSave = useCallback(() => {

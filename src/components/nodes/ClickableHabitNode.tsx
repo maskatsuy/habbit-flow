@@ -34,20 +34,89 @@ const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps
     if (isDisabled) return;
 
     setNodes((nodes) => {
-      // 条件分岐後のノードかチェック
-      const currentNode = nodes.find(n => n.id === id);
-      if (!currentNode || currentNode.type !== 'habit') return nodes;
-
-      // 条件分岐ノードの後にあるかチェック
-      const isAfterConditional = edges.some((e: any) => 
-        e.target === id && 
-        nodes.find(n => n.id === e.source)?.type === 'conditional'
-      );
+      const willBeCompleted = !isCompleted;
+      
+      // クリックされたノードが条件分岐のどのパスに属しているか調べる
+      const findConditionalPath = (nodeId: string): { conditionalId: string; handle: string } | null => {
+        const visited = new Set<string>();
+        const queue: string[] = [nodeId];
+        
+        while (queue.length > 0) {
+          const currentId = queue.shift()!;
+          if (visited.has(currentId)) continue;
+          visited.add(currentId);
+          
+          const incomingEdges = edges.filter((e: any) => e.target === currentId);
+          
+          for (const edge of incomingEdges) {
+            const sourceNode = nodes.find(n => n.id === edge.source);
+            if (sourceNode?.type === 'conditional') {
+              return {
+                conditionalId: edge.source,
+                handle: edge.sourceHandle
+              };
+            }
+            queue.push(edge.source);
+          }
+        }
+        
+        return null;
+      };
+      
+      const conditionalPath = findConditionalPath(id);
+      
+      // 同じ条件分岐の他のパスのノードを取得
+      const getOtherPathNodes = (): Set<string> => {
+        const otherNodes = new Set<string>();
+        
+        if (!conditionalPath) return otherNodes;
+        
+        // 条件分岐から出ている他のパスを見つける
+        const otherPathEdges = edges.filter((e: any) => 
+          e.source === conditionalPath.conditionalId && 
+          e.sourceHandle !== conditionalPath.handle
+        );
+        
+        // 各パスのノードを収集（再帰的に下流も含む、ただし合流点は除外）
+        const collectPathNodes = (nodeId: string, visited = new Set<string>()) => {
+          if (visited.has(nodeId)) return;
+          visited.add(nodeId);
+          
+          const node = nodes.find(n => n.id === nodeId);
+          
+          // 合流点（複数の入力を持つノード）は除外
+          const incomingEdgeCount = edges.filter((e: any) => e.target === nodeId).length;
+          if (incomingEdgeCount > 1) {
+            return;
+          }
+          
+          if (node?.type === 'habit') {
+            otherNodes.add(nodeId);
+          }
+          
+          // 下流のノードも収集（ただし条件分岐と合流点は越えない）
+          const outgoingEdges = edges.filter((e: any) => e.source === nodeId);
+          for (const edge of outgoingEdges) {
+            const targetNode = nodes.find(n => n.id === edge.target);
+            const targetIncomingCount = edges.filter((e: any) => e.target === edge.target).length;
+            if (targetNode && targetNode.type !== 'conditional' && targetIncomingCount <= 1) {
+              collectPathNodes(edge.target, visited);
+            }
+          }
+        };
+        
+        otherPathEdges.forEach(edge => {
+          collectPathNodes(edge.target);
+        });
+        
+        return otherNodes;
+      };
+      
+      const otherPathNodeIds = willBeCompleted ? getOtherPathNodes() : new Set<string>();
 
       return nodes.map((node) => {
         // ダブルクリックされたノードを更新
         if (node.id === id && node.type === 'habit') {
-          console.log('Updating node completion:', id, 'from', isCompleted, 'to', !isCompleted);
           return {
             ...node,
             type: 'habit' as const,
@@ -59,35 +128,17 @@ const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps
           };
         }
 
-        // 条件分岐後の排他制御
-        if (isAfterConditional && node.type === 'habit') {
-          const willBeCompleted = !isCompleted;
-          
-          // ジョギングがクリックされて完了になる場合、エアロバイクを未完了に
-          if (id === 'habit-2' && node.id === 'habit-3' && willBeCompleted) {
-            return {
-              ...node,
-              type: 'habit' as const,
-              data: {
-                ...node.data,
-                isCompleted: false,
-                completedAt: null,
-              },
-            };
-          }
-          
-          // エアロバイクがクリックされて完了になる場合、ジョギングを未完了に
-          if (id === 'habit-3' && node.id === 'habit-2' && willBeCompleted) {
-            return {
-              ...node,
-              type: 'habit' as const,
-              data: {
-                ...node.data,
-                isCompleted: false,
-                completedAt: null,
-              },
-            };
-          }
+        // 条件分岐の他のパスのノードを未完了にする
+        if (otherPathNodeIds.has(node.id) && node.type === 'habit') {
+          return {
+            ...node,
+            type: 'habit' as const,
+            data: {
+              ...node.data,
+              isCompleted: false,
+              completedAt: null,
+            },
+          };
         }
 
         return node;
