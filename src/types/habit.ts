@@ -20,7 +20,9 @@ export interface Habit {
 export interface HabitNodeData {
   habitId: string;
   label: string;
+  description?: string;
   icon?: string;
+  timing?: HabitTiming;
   isCompleted: boolean;
   completedAt: Date | null;
   isDisabled?: boolean;

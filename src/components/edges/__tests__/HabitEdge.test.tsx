@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { ReactFlowProvider } from 'reactflow';
+import { ReactFlowProvider, Position } from 'reactflow';
 import HabitEdge from '../HabitEdge';
 import type { EdgeProps } from 'reactflow';
 
@@ -12,8 +12,8 @@ const mockEdgeProps: EdgeProps = {
   sourceY: 100,
   targetX: 200,
   targetY: 100,
-  sourcePosition: 'right' as const,
-  targetPosition: 'left' as const,
+  sourcePosition: Position.Right,
+  targetPosition: Position.Left,
   style: {},
   markerEnd: '',
   data: {

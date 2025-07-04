@@ -4,12 +4,9 @@ import {
   useNodesState,
   useEdgesState,
   ReactFlowProvider,
-  useReactFlow,
 } from 'reactflow';
-import type { Connection, NodeProps } from 'reactflow';
+import type { Connection } from 'reactflow';
 import { ClickableHabitNode, TriggerNode, ConditionalNode } from '../../nodes';
-import type { ClickableHabitNodeProps } from '../../nodes/ClickableHabitNode';
-import InsertableHabitEdge from '../../edges/InsertableHabitEdge';
 import FlowControls from '../../common/FlowControls';
 import HabitFlowCanvas from '../HabitFlowCanvas';
 import NodeCreator from '../NodeCreator';
@@ -22,7 +19,7 @@ import { useHabitReset } from '../../../hooks/useHabitReset';
 import { useFlowKeyboardShortcuts } from '../../../hooks/useFlowKeyboardShortcuts';
 import { useConnectionValidation } from '../../../hooks/useConnectionValidation';
 import { initialNodes, initialEdges } from '../../../data/sampleFlow';
-import type { FlowNode, FlowEdge, HabitNode as HabitNodeType, HabitNodeData } from '../../../types';
+import type { FlowNode, FlowEdge, HabitNode as HabitNodeType } from '../../../types';
 import { nodeTypes } from './nodeTypes';
 import { edgeTypes } from './edgeTypes';
 import { NodeEditorProvider } from '../../../contexts/NodeEditorContext';
@@ -119,7 +116,7 @@ function HabitFlowInner() {
         icon: nodeData.icon || '📝',
         isCompleted: false,
         completedAt: null,
-        timing: nodeData.timing,
+        timing: nodeData.timing as HabitNodeType['data']['timing'],
       },
     };
     
@@ -178,7 +175,7 @@ function HabitFlowInner() {
         icon: nodeData.icon || '📝',
         isCompleted: false,
         completedAt: null,
-        timing: nodeData.timing,
+        timing: nodeData.timing as HabitNodeType['data']['timing'],
       },
     };
     

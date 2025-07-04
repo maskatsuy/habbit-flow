@@ -20,8 +20,6 @@ const InsertableHabitEdge = memo(({
   markerEnd,
   label,
   data,
-  source,
-  target,
 }: InsertableHabitEdgeProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showButton, setShowButton] = useState(false);
@@ -119,7 +117,7 @@ const InsertableHabitEdge = memo(({
       )}
 
       {/* 挿入ボタン */}
-      {showButton && onInsertNode && (
+      {showButton && (
         <EdgeLabelRenderer>
           <div
             style={{
