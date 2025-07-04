@@ -1,24 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 interface KeyboardShortcutHandlers {
-  onSave: () => void;
-  onSaveAs: () => void;
+  onSave: () => void
+  onSaveAs: () => void
 }
 
 export function useFlowKeyboardShortcuts(handlers: KeyboardShortcutHandlers) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault();
+        e.preventDefault()
         if (e.shiftKey) {
-          handlers.onSaveAs();
+          handlers.onSaveAs()
         } else {
-          handlers.onSave();
+          handlers.onSave()
         }
       }
-    };
+    }
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handlers]);
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [handlers])
 }

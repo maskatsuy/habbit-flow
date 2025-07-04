@@ -92,7 +92,6 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
-        continue-on-error: true
 
   # フォーマットチェック
   format:
@@ -118,7 +117,6 @@ jobs:
       - name: Check formatting
         run: |
           npm run format:check || npm run prettier -- --check "src/**/*.{js,jsx,ts,tsx,css,md,json}"
-        continue-on-error: true
 
   # テスト実行
   test:

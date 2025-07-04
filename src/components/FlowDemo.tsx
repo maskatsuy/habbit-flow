@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback } from 'react'
 import ReactFlow, {
   addEdge,
   useNodesState,
@@ -6,8 +6,8 @@ import ReactFlow, {
   ReactFlowProvider,
   Controls,
   Background,
-} from 'reactflow';
-import type { Node, Edge, Connection } from 'reactflow';
+} from 'reactflow'
+import type { Node, Edge, Connection } from 'reactflow'
 
 const initialNodes: Node[] = [
   {
@@ -32,7 +32,7 @@ const initialNodes: Node[] = [
     position: { x: 600, y: 150 },
     targetPosition: 'left' as const,
   },
-];
+]
 
 const initialEdges: Edge[] = [
   {
@@ -41,16 +41,16 @@ const initialEdges: Edge[] = [
     target: '2',
     animated: true,
   },
-];
+]
 
 export default function FlowDemo() {
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
-  );
+  )
 
   return (
     <ReactFlowProvider>
@@ -68,5 +68,5 @@ export default function FlowDemo() {
         </ReactFlow>
       </div>
     </ReactFlowProvider>
-  );
+  )
 }

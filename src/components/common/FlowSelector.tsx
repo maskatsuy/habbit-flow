@@ -1,9 +1,9 @@
-import { memo } from 'react';
+import { memo } from 'react'
 
 interface FlowSelectorProps {
-  currentFlow: string;
-  savedFlows: string[];
-  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  currentFlow: string
+  savedFlows: string[]
+  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
 const FlowSelector = memo(({ currentFlow, savedFlows, onChange }: FlowSelectorProps) => {
@@ -16,21 +16,22 @@ const FlowSelector = memo(({ currentFlow, savedFlows, onChange }: FlowSelectorPr
       <optgroup label="現在のフロー">
         <option value={currentFlow}>{currentFlow}</option>
       </optgroup>
-      {savedFlows.filter(name => name !== currentFlow).length > 0 && (
+      {savedFlows.filter((name) => name !== currentFlow).length > 0 && (
         <optgroup label="保存済みフロー">
           {savedFlows
-            .filter(name => name !== currentFlow)
-            .map(name => (
-              <option key={name} value={name}>{name}</option>
-            ))
-          }
+            .filter((name) => name !== currentFlow)
+            .map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
         </optgroup>
       )}
       <option value="__new__">➕ 新規フロー作成</option>
     </select>
-  );
-});
+  )
+})
 
-FlowSelector.displayName = 'FlowSelector';
+FlowSelector.displayName = 'FlowSelector'
 
-export default FlowSelector;
+export default FlowSelector

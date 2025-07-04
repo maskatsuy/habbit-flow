@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { renderHook } from '@testing-library/react';
-import { useFlowAnimations } from '../useFlowAnimations';
-import type { FlowNode, FlowEdge } from '../../types';
+import { describe, it, expect } from 'vitest'
+import { renderHook } from '@testing-library/react'
+import { useFlowAnimations } from '../useFlowAnimations'
+import type { FlowNode, FlowEdge } from '../../types'
 
 describe('useFlowAnimations - 実際のデータでのテスト', () => {
   it('実際のサンプルフローでマージポイントが正しく動作する', () => {
@@ -71,7 +71,7 @@ describe('useFlowAnimations - 実際のデータでのテスト', () => {
           completedAt: null,
         },
       },
-    ];
+    ]
 
     const edges: FlowEdge[] = [
       {
@@ -122,72 +122,70 @@ describe('useFlowAnimations - 実際のデータでのテスト', () => {
         label: '運動後',
         data: { trigger: 'after', condition: null },
       },
-    ];
+    ]
 
     // ジョギング完了時の状態をテスト
-    const { result } = renderHook(() => useFlowAnimations(nodes, edges));
-    const animatedNodes = result.current.nodes;
+    const { result } = renderHook(() => useFlowAnimations(nodes, edges))
+    const animatedNodes = result.current.nodes
 
-    const waterNode = animatedNodes.find(n => n.id === 'habit-1');
-    const jogNode = animatedNodes.find(n => n.id === 'habit-2');
-    const bikeNode = animatedNodes.find(n => n.id === 'habit-3');
-    const showerNode = animatedNodes.find(n => n.id === 'habit-4');
+    const waterNode = animatedNodes.find((n) => n.id === 'habit-1')
+    const jogNode = animatedNodes.find((n) => n.id === 'habit-2')
+    const bikeNode = animatedNodes.find((n) => n.id === 'habit-3')
+    const showerNode = animatedNodes.find((n) => n.id === 'habit-4')
 
     console.log('実データでのテスト結果:', {
-      water: { 
-        id: waterNode?.id, 
+      water: {
+        id: waterNode?.id,
         label: waterNode?.data.label,
         isInactive: waterNode?.data.isInactive,
         isCompleted: waterNode?.data.isCompleted,
       },
-      jog: { 
-        id: jogNode?.id, 
+      jog: {
+        id: jogNode?.id,
         label: jogNode?.data.label,
         isInactive: jogNode?.data.isInactive,
         isCompleted: jogNode?.data.isCompleted,
       },
-      bike: { 
-        id: bikeNode?.id, 
+      bike: {
+        id: bikeNode?.id,
         label: bikeNode?.data.label,
         isInactive: bikeNode?.data.isInactive,
         isCompleted: bikeNode?.data.isCompleted,
       },
-      shower: { 
-        id: showerNode?.id, 
+      shower: {
+        id: showerNode?.id,
         label: showerNode?.data.label,
         isInactive: showerNode?.data.isInactive,
         isCompleted: showerNode?.data.isCompleted,
-        incomingEdgeCount: edges.filter(e => e.target === 'habit-4').length,
+        incomingEdgeCount: edges.filter((e) => e.target === 'habit-4').length,
       },
-    });
+    })
 
     // アサーション
-    expect(waterNode?.data.isInactive).toBe(false);
-    expect(jogNode?.data.isInactive).toBe(false); // 完了済み
-    expect(bikeNode?.data.isInactive).toBe(true); // 選択されていないパス
-    expect(showerNode?.data.isInactive).toBe(false); // マージポイントは影響を受けない
+    expect(waterNode?.data.isInactive).toBe(false)
+    expect(jogNode?.data.isInactive).toBe(false) // 完了済み
+    expect(bikeNode?.data.isInactive).toBe(true) // 選択されていないパス
+    expect(showerNode?.data.isInactive).toBe(false) // マージポイントは影響を受けない
 
     // エアロバイクも完了させた場合
-    const nodesWithBothCompleted = nodes.map(n => 
-      (n.id === 'habit-2' || n.id === 'habit-3')
+    const nodesWithBothCompleted = nodes.map((n) =>
+      n.id === 'habit-2' || n.id === 'habit-3'
         ? { ...n, data: { ...n.data, isCompleted: true } }
-        : n
-    );
+        : n,
+    )
 
-    const { result: result2 } = renderHook(() => 
-      useFlowAnimations(nodesWithBothCompleted, edges)
-    );
-    const animatedNodes2 = result2.current.nodes;
+    const { result: result2 } = renderHook(() => useFlowAnimations(nodesWithBothCompleted, edges))
+    const animatedNodes2 = result2.current.nodes
 
-    const showerNode2 = animatedNodes2.find(n => n.id === 'habit-4');
-    
+    const showerNode2 = animatedNodes2.find((n) => n.id === 'habit-4')
+
     console.log('両方完了時のシャワーノード:', {
       id: showerNode2?.id,
       label: showerNode2?.data.label,
       isInactive: showerNode2?.data.isInactive,
       isCompleted: showerNode2?.data.isCompleted,
-    });
+    })
 
-    expect(showerNode2?.data.isInactive).toBe(false); // マージポイントは常にアクティブ
-  });
-});
+    expect(showerNode2?.data.isInactive).toBe(false) // マージポイントは常にアクティブ
+  })
+})

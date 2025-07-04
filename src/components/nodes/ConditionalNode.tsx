@@ -1,17 +1,17 @@
-import { memo, ReactNode } from 'react';
-import { Handle, Position } from 'reactflow';
-import type { NodeProps } from 'reactflow';
-import NodeWrapper from './NodeWrapper';
+import { memo } from 'react'
+import { Handle, Position } from 'reactflow'
+import type { NodeProps } from 'reactflow'
+import NodeWrapper from './NodeWrapper'
 
 interface ConditionalNodeData {
-  label: string;
-  condition: string;
-  icon?: string;
-  isFlowing?: boolean;
+  label: string
+  condition: string
+  icon?: string
+  isFlowing?: boolean
 }
 
 const ConditionalNode = memo(({ data, selected }: NodeProps<ConditionalNodeData>) => {
-  const { label, icon, condition, isFlowing } = data;
+  const { label, icon, condition, isFlowing } = data
 
   const customHandles = (
     <>
@@ -38,7 +38,7 @@ const ConditionalNode = memo(({ data, selected }: NodeProps<ConditionalNodeData>
         NO
       </div>
     </>
-  );
+  )
 
   return (
     <NodeWrapper
@@ -59,9 +59,9 @@ const ConditionalNode = memo(({ data, selected }: NodeProps<ConditionalNodeData>
         </div>
       </div>
     </NodeWrapper>
-  );
-});
+  )
+})
 
-ConditionalNode.displayName = 'ConditionalNode';
+ConditionalNode.displayName = 'ConditionalNode'
 
-export default ConditionalNode;
+export default ConditionalNode

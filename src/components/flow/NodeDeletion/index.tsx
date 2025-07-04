@@ -1,32 +1,32 @@
-import { useState, memo } from 'react';
-import type { FlowNode } from '../../../types';
+import { useState, memo } from 'react'
+import type { FlowNode } from '../../../types'
 
 interface NodeDeletionProps {
-  selectedNode: FlowNode | null;
-  onDelete: (nodeId: string) => void;
-  canDelete?: boolean;
+  selectedNode: FlowNode | null
+  onDelete: (nodeId: string) => void
+  canDelete?: boolean
 }
 
 const NodeDeletion = memo(({ selectedNode, onDelete, canDelete = true }: NodeDeletionProps) => {
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
 
   // Only allow deletion of habit nodes (not trigger or conditional nodes)
   if (!selectedNode || selectedNode.type !== 'habit') {
-    return null;
+    return null
   }
 
   const handleDeleteClick = () => {
-    setShowConfirmDialog(true);
-  };
+    setShowConfirmDialog(true)
+  }
 
   const handleConfirm = () => {
-    onDelete(selectedNode.id);
-    setShowConfirmDialog(false);
-  };
+    onDelete(selectedNode.id)
+    setShowConfirmDialog(false)
+  }
 
   const handleCancel = () => {
-    setShowConfirmDialog(false);
-  };
+    setShowConfirmDialog(false)
+  }
 
   return (
     <>
@@ -34,11 +34,11 @@ const NodeDeletion = memo(({ selectedNode, onDelete, canDelete = true }: NodeDel
         <button
           onClick={handleDeleteClick}
           className={`px-4 py-2 rounded-md transition-colors flex items-center gap-2 shadow-lg ${
-            canDelete 
-              ? 'bg-red-500 text-white hover:bg-red-600 cursor-pointer' 
+            canDelete
+              ? 'bg-red-500 text-white hover:bg-red-600 cursor-pointer'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
-          title={canDelete ? "ノードを削除 (Delete)" : "このノードは削除できません"}
+          title={canDelete ? 'ノードを削除 (Delete)' : 'このノードは削除できません'}
           disabled={!canDelete}
         >
           🗑️ 削除
@@ -52,10 +52,9 @@ const NodeDeletion = memo(({ selectedNode, onDelete, canDelete = true }: NodeDel
         >
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">ノードを削除しますか？</h2>
-            
+
             <p className="mb-6 text-gray-700">
-              「{selectedNode.data.label}」を削除してもよろしいですか？
-              この操作は取り消せません。
+              「{selectedNode.data.label}」を削除してもよろしいですか？ この操作は取り消せません。
             </p>
 
             <div className="flex gap-2 justify-end">
@@ -76,9 +75,9 @@ const NodeDeletion = memo(({ selectedNode, onDelete, canDelete = true }: NodeDel
         </div>
       )}
     </>
-  );
-});
+  )
+})
 
-NodeDeletion.displayName = 'NodeDeletion';
+NodeDeletion.displayName = 'NodeDeletion'
 
-export default NodeDeletion;
+export default NodeDeletion

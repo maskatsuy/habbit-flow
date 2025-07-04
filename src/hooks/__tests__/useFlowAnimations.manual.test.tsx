@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { renderHook } from '@testing-library/react';
-import { useFlowAnimations } from '../useFlowAnimations';
-import type { FlowNode, FlowEdge } from '../../types';
+import { describe, it, expect } from 'vitest'
+import { renderHook } from '@testing-library/react'
+import { useFlowAnimations } from '../useFlowAnimations'
+import type { FlowNode, FlowEdge } from '../../types'
 
 describe('useFlowAnimations - 手動テストシナリオ', () => {
   it('ジョギング完了後に筋トレを前に追加した場合、筋トレは未選択にならない', () => {
@@ -78,7 +78,7 @@ describe('useFlowAnimations - 手動テストシナリオ', () => {
           completedAt: null,
         },
       },
-    ];
+    ]
 
     // エッジ（筋トレが条件分岐とジョギングの間に挿入された状態）
     const edges: FlowEdge[] = [
@@ -122,35 +122,35 @@ describe('useFlowAnimations - 手動テストシナリオ', () => {
         type: 'habit',
         data: { trigger: 'after', condition: 'not_sunny' },
       },
-    ];
+    ]
 
-    const { result } = renderHook(() => useFlowAnimations(nodes, edges));
-    const animatedNodes = result.current.nodes;
+    const { result } = renderHook(() => useFlowAnimations(nodes, edges))
+    const animatedNodes = result.current.nodes
 
     // 各ノードの状態を確認
-    const muscleNode = animatedNodes.find(n => n.id === 'habit-muscle');
-    const jogNode = animatedNodes.find(n => n.id === 'habit-2');
-    const bikeNode = animatedNodes.find(n => n.id === 'habit-3');
+    const muscleNode = animatedNodes.find((n) => n.id === 'habit-muscle')
+    const jogNode = animatedNodes.find((n) => n.id === 'habit-2')
+    const bikeNode = animatedNodes.find((n) => n.id === 'habit-3')
 
     console.log('筋トレノード:', {
       id: muscleNode?.id,
       isInactive: muscleNode?.data.isInactive,
       isCompleted: muscleNode?.data.isCompleted,
-    });
+    })
     console.log('ジョギングノード:', {
       id: jogNode?.id,
       isInactive: jogNode?.data.isInactive,
       isCompleted: jogNode?.data.isCompleted,
-    });
+    })
     console.log('エアロバイクノード:', {
       id: bikeNode?.id,
       isInactive: bikeNode?.data.isInactive,
       isCompleted: bikeNode?.data.isCompleted,
-    });
+    })
 
     // アサーション
-    expect(muscleNode?.data.isInactive).toBe(false); // 筋トレは選択されたパスなのでアクティブ
-    expect(jogNode?.data.isInactive).toBe(false); // ジョギングは完了済みなのでアクティブ
-    expect(bikeNode?.data.isInactive).toBe(true); // エアロバイクは選択されていないパスなので未選択
-  });
-});
+    expect(muscleNode?.data.isInactive).toBe(false) // 筋トレは選択されたパスなのでアクティブ
+    expect(jogNode?.data.isInactive).toBe(false) // ジョギングは完了済みなのでアクティブ
+    expect(bikeNode?.data.isInactive).toBe(true) // エアロバイクは選択されていないパスなので未選択
+  })
+})

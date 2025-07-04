@@ -1,6 +1,6 @@
-import { memo } from 'react';
-import { getSmoothStepPath, EdgeLabelRenderer, BaseEdge } from 'reactflow';
-import type { EdgeProps } from 'reactflow';
+import { memo } from 'react'
+import { getSmoothStepPath, EdgeLabelRenderer, BaseEdge } from 'reactflow'
+import type { EdgeProps } from 'reactflow'
 
 const HabitEdge = memo((props: EdgeProps) => {
   const {
@@ -13,7 +13,7 @@ const HabitEdge = memo((props: EdgeProps) => {
     targetPosition,
     label,
     style = {},
-  } = props;
+  } = props
 
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
@@ -22,14 +22,14 @@ const HabitEdge = memo((props: EdgeProps) => {
     targetX,
     targetY,
     targetPosition,
-  });
+  })
 
-  const isConditionalEdge = id?.includes('yes') || id?.includes('no');
-  const edgeColor = id?.includes('yes') 
+  const isConditionalEdge = id?.includes('yes') || id?.includes('no')
+  const edgeColor = id?.includes('yes')
     ? '#10b981' // green
-    : id?.includes('no') 
-    ? '#ef4444' // red
-    : '#94a3b8'; // gray
+    : id?.includes('no')
+      ? '#ef4444' // red
+      : '#94a3b8' // gray
 
   return (
     <>
@@ -40,7 +40,9 @@ const HabitEdge = memo((props: EdgeProps) => {
           ...style,
           strokeWidth: 2,
           stroke: edgeColor,
-          ...(isConditionalEdge ? {} : { animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }),
+          ...(isConditionalEdge
+            ? {}
+            : { animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }),
         }}
       />
       {label && (
@@ -58,9 +60,9 @@ const HabitEdge = memo((props: EdgeProps) => {
         </EdgeLabelRenderer>
       )}
     </>
-  );
-});
+  )
+})
 
-HabitEdge.displayName = 'HabitEdge';
+HabitEdge.displayName = 'HabitEdge'
 
-export default HabitEdge;
+export default HabitEdge

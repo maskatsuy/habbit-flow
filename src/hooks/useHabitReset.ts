@@ -1,17 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
-import type { FlowNode, HabitNode as HabitNodeType } from '../types';
+import { useCallback, useEffect, useState } from 'react'
+import type { FlowNode, HabitNode as HabitNodeType } from '../types'
 
 export function useHabitReset(
   nodes: FlowNode[],
-  setNodes: React.Dispatch<React.SetStateAction<FlowNode[]>>
+  setNodes: React.Dispatch<React.SetStateAction<FlowNode[]>>,
 ) {
-  const [lastResetDate, setLastResetDate] = useState(new Date().toDateString());
+  const [lastResetDate, setLastResetDate] = useState(new Date().toDateString())
 
   const resetAllHabits = useCallback(() => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.type === 'habit') {
-          const habitNode = node as HabitNodeType;
+          const habitNode = node as HabitNodeType
           return {
             ...habitNode,
             data: {
@@ -19,43 +19,43 @@ export function useHabitReset(
               isCompleted: false,
               completedAt: null,
             },
-          };
+          }
         }
-        return node;
-      })
-    );
-  }, [setNodes]);
+        return node
+      }),
+    )
+  }, [setNodes])
 
   // 日付変更を検知して自動リセット
   useEffect(() => {
     const checkDateChange = () => {
-      const currentDate = new Date().toDateString();
+      const currentDate = new Date().toDateString()
       if (currentDate !== lastResetDate) {
-        resetAllHabits();
-        setLastResetDate(currentDate);
+        resetAllHabits()
+        setLastResetDate(currentDate)
       }
-    };
+    }
 
     // 初回チェック
-    checkDateChange();
+    checkDateChange()
 
     // 1分ごとにチェック
-    const interval = setInterval(checkDateChange, 60000);
+    const interval = setInterval(checkDateChange, 60000)
 
-    return () => clearInterval(interval);
-  }, [lastResetDate, resetAllHabits]);
+    return () => clearInterval(interval)
+  }, [lastResetDate, resetAllHabits])
 
   // 手動リセット
   const handleResetHabits = useCallback(() => {
     if (window.confirm('すべての習慣の完了状態をリセットしますか？')) {
-      resetAllHabits();
-      setLastResetDate(new Date().toDateString());
+      resetAllHabits()
+      setLastResetDate(new Date().toDateString())
     }
-  }, [resetAllHabits]);
+  }, [resetAllHabits])
 
   return {
     resetAllHabits,
     handleResetHabits,
     lastResetDate,
-  };
+  }
 }
