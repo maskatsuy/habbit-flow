@@ -1,11 +1,11 @@
-import { useState, useEffect, memo } from 'react';
-import type { HabitNode } from '../../../types';
+import { useState, useEffect, memo } from 'react'
+import type { HabitNode } from '../../../types'
 
 interface NodeEditorProps {
-  node: HabitNode | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (updatedNode: HabitNode) => void;
+  node: HabitNode | null
+  isOpen: boolean
+  onClose: () => void
+  onSave: (updatedNode: HabitNode) => void
 }
 
 const NodeEditor = memo(({ node, isOpen, onClose, onSave }: NodeEditorProps) => {
@@ -14,8 +14,8 @@ const NodeEditor = memo(({ node, isOpen, onClose, onSave }: NodeEditorProps) => 
     description: '',
     icon: '',
     timing: 'morning',
-  });
-  const [errors, setErrors] = useState<{ label?: string }>({});
+  })
+  const [errors, setErrors] = useState<{ label?: string }>({})
 
   // Update form data when node changes
   useEffect(() => {
@@ -25,25 +25,25 @@ const NodeEditor = memo(({ node, isOpen, onClose, onSave }: NodeEditorProps) => 
         description: node.data.description || '',
         icon: node.data.icon || '',
         timing: node.data.timing || 'morning',
-      });
-      setErrors({});
+      })
+      setErrors({})
     }
-  }, [node]);
+  }, [node])
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     // Validation
-    const newErrors: { label?: string } = {};
+    const newErrors: { label?: string } = {}
     if (!formData.label.trim()) {
-      newErrors.label = '習慣名は必須です';
+      newErrors.label = '習慣名は必須です'
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+      setErrors(newErrors)
+      return
     }
-    
+
     if (node) {
       onSave({
         ...node,
@@ -54,18 +54,18 @@ const NodeEditor = memo(({ node, isOpen, onClose, onSave }: NodeEditorProps) => 
           icon: formData.icon,
           timing: formData.timing,
         },
-      });
+      })
     }
-    onClose();
-  };
+    onClose()
+  }
 
   const handleCancel = () => {
-    onClose();
-    setErrors({});
-  };
+    onClose()
+    setErrors({})
+  }
 
   if (!isOpen || !node) {
-    return null;
+    return null
   }
 
   return (
@@ -75,7 +75,7 @@ const NodeEditor = memo(({ node, isOpen, onClose, onSave }: NodeEditorProps) => 
     >
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">習慣ノードを編集</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="edit-label" className="block text-sm font-medium mb-1">
@@ -90,9 +90,7 @@ const NodeEditor = memo(({ node, isOpen, onClose, onSave }: NodeEditorProps) => 
                 errors.label ? 'border-red-500' : 'border-gray-300'
               }`}
             />
-            {errors.label && (
-              <p className="text-red-500 text-sm mt-1">{errors.label}</p>
-            )}
+            {errors.label && <p className="text-red-500 text-sm mt-1">{errors.label}</p>}
           </div>
 
           <div className="mb-4">
@@ -171,9 +169,9 @@ const NodeEditor = memo(({ node, isOpen, onClose, onSave }: NodeEditorProps) => 
         </form>
       </div>
     </div>
-  );
-});
+  )
+})
 
-NodeEditor.displayName = 'NodeEditor';
+NodeEditor.displayName = 'NodeEditor'
 
-export default NodeEditor;
+export default NodeEditor

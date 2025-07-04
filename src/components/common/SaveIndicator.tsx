@@ -1,19 +1,15 @@
-import { memo } from 'react';
+import { memo } from 'react'
 
 interface SaveIndicatorProps {
-  hasUnsavedChanges: boolean;
+  hasUnsavedChanges: boolean
 }
 
 const SaveIndicator = memo(({ hasUnsavedChanges }: SaveIndicatorProps) => {
-  if (!hasUnsavedChanges) return null;
+  if (!hasUnsavedChanges) return null
 
-  return (
-    <span className="text-xs text-orange-500 font-medium">
-      ● 未保存
-    </span>
-  );
-});
+  return <span className="text-xs text-orange-500 font-medium">● 未保存</span>
+})
 
-SaveIndicator.displayName = 'SaveIndicator';
+SaveIndicator.displayName = 'SaveIndicator'
 
-export default SaveIndicator;
+export default SaveIndicator

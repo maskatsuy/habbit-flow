@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
-import { ReactFlowProvider, Position } from 'reactflow';
-import HabitEdge from '../HabitEdge';
-import type { EdgeProps } from 'reactflow';
+import { describe, it, expect } from 'vitest'
+import { render } from '@testing-library/react'
+import { ReactFlowProvider, Position } from 'reactflow'
+import HabitEdge from '../HabitEdge'
+import type { EdgeProps } from 'reactflow'
 
 const mockEdgeProps: EdgeProps = {
   id: 'edge-1',
@@ -20,7 +20,7 @@ const mockEdgeProps: EdgeProps = {
     trigger: 'after',
     condition: null,
   },
-};
+}
 
 describe('HabitEdge', () => {
   it('should render edge path', () => {
@@ -29,12 +29,12 @@ describe('HabitEdge', () => {
         <svg>
           <HabitEdge {...mockEdgeProps} />
         </svg>
-      </ReactFlowProvider>
-    );
+      </ReactFlowProvider>,
+    )
 
-    const path = container.querySelector('path');
-    expect(path).toBeInTheDocument();
-  });
+    const path = container.querySelector('path')
+    expect(path).toBeInTheDocument()
+  })
 
   it('should apply custom styles', () => {
     const { container } = render(
@@ -42,10 +42,10 @@ describe('HabitEdge', () => {
         <svg>
           <HabitEdge {...mockEdgeProps} />
         </svg>
-      </ReactFlowProvider>
-    );
+      </ReactFlowProvider>,
+    )
 
-    const path = container.querySelector('.react-flow__edge-path');
-    expect(path).toHaveStyle('stroke-width: 2');
-  });
-});
+    const path = container.querySelector('.react-flow__edge-path')
+    expect(path).toHaveStyle('stroke-width: 2')
+  })
+})

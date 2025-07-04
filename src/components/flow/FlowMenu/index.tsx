@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react'
 
 interface FlowMenuProps {
-  onSaveAs: () => void;
-  onRename: () => void;
-  onDelete: () => void;
-  onExport: () => void;
-  onImport: () => void;
-  canDelete: boolean;
+  onSaveAs: () => void
+  onRename: () => void
+  onDelete: () => void
+  onExport: () => void
+  onImport: () => void
+  canDelete: boolean
 }
 
 export default function FlowMenu({
@@ -17,26 +17,26 @@ export default function FlowMenu({
   onImport,
   canDelete,
 }: FlowMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleMenuAction = (action: () => void) => {
-    action();
-    setIsOpen(false);
-  };
+    action()
+    setIsOpen(false)
+  }
 
   return (
     <div className="relative" ref={menuRef}>
@@ -95,9 +95,7 @@ export default function FlowMenu({
               onClick={() => handleMenuAction(onDelete)}
               disabled={!canDelete}
               className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${
-                canDelete
-                  ? 'text-red-600 hover:bg-red-50'
-                  : 'text-gray-400 cursor-not-allowed'
+                canDelete ? 'text-red-600 hover:bg-red-50' : 'text-gray-400 cursor-not-allowed'
               }`}
             >
               <span className="text-base">🗑️</span>
@@ -107,5 +105,5 @@ export default function FlowMenu({
         </div>
       )}
     </div>
-  );
+  )
 }

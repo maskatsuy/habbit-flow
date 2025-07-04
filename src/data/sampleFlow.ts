@@ -1,4 +1,4 @@
-import type { FlowNode, FlowEdge, HabitNode as HabitNodeType } from '../types';
+import type { FlowNode, FlowEdge, HabitNode as HabitNodeType } from '../types'
 
 export const initialNodes: FlowNode[] = [
   {
@@ -69,7 +69,7 @@ export const initialNodes: FlowNode[] = [
       completedAt: null,
     },
   } as HabitNodeType,
-];
+]
 
 export const initialEdges: FlowEdge[] = [
   {
@@ -138,4 +138,4 @@ export const initialEdges: FlowEdge[] = [
       condition: null,
     },
   },
-];
+]

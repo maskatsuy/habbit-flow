@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { renderHook } from '@testing-library/react';
-import { useFlowAnimations } from '../useFlowAnimations';
-import type { FlowNode, FlowEdge } from '../../types';
+import { describe, it, expect } from 'vitest'
+import { renderHook } from '@testing-library/react'
+import { useFlowAnimations } from '../useFlowAnimations'
+import type { FlowNode, FlowEdge } from '../../types'
 
 describe('useFlowAnimations - パス切り替え時のマージポイント', () => {
   it('ジョギング完了後にエアロバイク完了してもコールドシャワーはアクティブのまま', () => {
@@ -71,7 +71,7 @@ describe('useFlowAnimations - パス切り替え時のマージポイント', ()
           completedAt: null,
         },
       },
-    ];
+    ]
 
     const edges: FlowEdge[] = [
       {
@@ -122,41 +122,41 @@ describe('useFlowAnimations - パス切り替え時のマージポイント', ()
         label: '運動後',
         data: { trigger: 'after', condition: null },
       },
-    ];
+    ]
 
-    const { result } = renderHook(() => useFlowAnimations(nodes, edges));
-    const animatedNodes = result.current.nodes;
+    const { result } = renderHook(() => useFlowAnimations(nodes, edges))
+    const animatedNodes = result.current.nodes
 
-    const jogNode = animatedNodes.find(n => n.id === 'habit-2');
-    const bikeNode = animatedNodes.find(n => n.id === 'habit-3');
-    const showerNode = animatedNodes.find(n => n.id === 'habit-4');
+    const jogNode = animatedNodes.find((n) => n.id === 'habit-2')
+    const bikeNode = animatedNodes.find((n) => n.id === 'habit-3')
+    const showerNode = animatedNodes.find((n) => n.id === 'habit-4')
 
     console.log('パス切り替え時の状態:', {
-      jog: { 
-        id: jogNode?.id, 
+      jog: {
+        id: jogNode?.id,
         label: jogNode?.data.label,
         isInactive: jogNode?.data.isInactive,
         isCompleted: jogNode?.data.isCompleted,
       },
-      bike: { 
-        id: bikeNode?.id, 
+      bike: {
+        id: bikeNode?.id,
         label: bikeNode?.data.label,
         isInactive: bikeNode?.data.isInactive,
         isCompleted: bikeNode?.data.isCompleted,
       },
-      shower: { 
-        id: showerNode?.id, 
+      shower: {
+        id: showerNode?.id,
         label: showerNode?.data.label,
         isInactive: showerNode?.data.isInactive,
         isCompleted: showerNode?.data.isCompleted,
         // デバッグ情報
-        incomingEdgeCount: edges.filter(e => e.target === 'habit-4').length,
+        incomingEdgeCount: edges.filter((e) => e.target === 'habit-4').length,
       },
-    });
+    })
 
     // アサーション
-    expect(jogNode?.data.isInactive).toBe(true); // ジョギングは選択されていないパス
-    expect(bikeNode?.data.isInactive).toBe(false); // エアロバイクは完了済み
-    expect(showerNode?.data.isInactive).toBe(false); // マージポイントは常にアクティブであるべき！
-  });
-});
+    expect(jogNode?.data.isInactive).toBe(true) // ジョギングは選択されていないパス
+    expect(bikeNode?.data.isInactive).toBe(false) // エアロバイクは完了済み
+    expect(showerNode?.data.isInactive).toBe(false) // マージポイントは常にアクティブであるべき！
+  })
+})
