@@ -2,9 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import NodeDeletion from '../NodeDeletion';
+import type { HabitNode } from '../../../types/habit';
 
 describe('NodeDeletion', () => {
-  const mockNode = {
+  const mockNode: HabitNode = {
     id: 'habit-1',
     type: 'habit',
     position: { x: 100, y: 100 },
