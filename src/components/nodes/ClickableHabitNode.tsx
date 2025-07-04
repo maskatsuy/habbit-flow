@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react'
 import { useReactFlow } from 'reactflow'
-import type { NodeProps } from 'reactflow'
+import type { NodeProps, Edge } from 'reactflow'
 import type { HabitNodeData } from '../../types'
 import { useFlowContext } from '../../contexts/FlowContext'
 import { useNodeEditor } from '../../contexts/NodeEditorContext'
@@ -49,7 +49,7 @@ const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps
             if (visited.has(currentId)) continue
             visited.add(currentId)
 
-            const incomingEdges = edges.filter((e: any) => e.target === currentId)
+            const incomingEdges = edges.filter((e: Edge) => e.target === currentId)
 
             for (const edge of incomingEdges) {
               const sourceNode = nodes.find((n) => n.id === edge.source)
@@ -76,7 +76,7 @@ const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps
 
           // 条件分岐から出ている他のパスを見つける
           const otherPathEdges = edges.filter(
-            (e: any) =>
+            (e: Edge) =>
               e.source === conditionalPath.conditionalId &&
               e.sourceHandle !== conditionalPath.handle,
           )
@@ -89,7 +89,7 @@ const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps
             const node = nodes.find((n) => n.id === nodeId)
 
             // 合流点（複数の入力を持つノード）は除外
-            const incomingEdgeCount = edges.filter((e: any) => e.target === nodeId).length
+            const incomingEdgeCount = edges.filter((e: Edge) => e.target === nodeId).length
             if (incomingEdgeCount > 1) {
               return
             }
@@ -99,10 +99,10 @@ const ClickableHabitNode = memo(({ data, selected, id }: ClickableHabitNodeProps
             }
 
             // 下流のノードも収集（ただし条件分岐と合流点は越えない）
-            const outgoingEdges = edges.filter((e: any) => e.source === nodeId)
+            const outgoingEdges = edges.filter((e: Edge) => e.source === nodeId)
             for (const edge of outgoingEdges) {
               const targetNode = nodes.find((n) => n.id === edge.target)
-              const targetIncomingCount = edges.filter((e: any) => e.target === edge.target).length
+              const targetIncomingCount = edges.filter((e: Edge) => e.target === edge.target).length
               if (targetNode && targetNode.type !== 'conditional' && targetIncomingCount <= 1) {
                 collectPathNodes(edge.target, visited)
               }

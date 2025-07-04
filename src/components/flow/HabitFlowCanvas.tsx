@@ -6,6 +6,8 @@ import type {
   OnEdgesChange,
   NodeMouseHandler,
   Connection,
+  NodeTypes,
+  EdgeTypes,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { FlowProvider } from '../../contexts/FlowContext'
@@ -14,8 +16,8 @@ import type { FlowNode, FlowEdge } from '../../types'
 interface HabitFlowCanvasProps {
   nodes: FlowNode[]
   edges: FlowEdge[]
-  nodeTypes?: any
-  edgeTypes?: any
+  nodeTypes?: NodeTypes
+  edgeTypes?: EdgeTypes
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
   onConnect: OnConnect

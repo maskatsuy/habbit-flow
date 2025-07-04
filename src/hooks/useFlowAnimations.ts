@@ -135,7 +135,7 @@ export function useFlowAnimations(nodes: FlowNode[], edges: FlowEdge[]) {
 
         if (conditionalPath && !isMergePoint) {
           // パス上の完了ノードをチェックする関数（条件分岐から始まって、合流点まで）
-          const checkPathForCompletedNodes = (startEdge: any): boolean => {
+          const checkPathForCompletedNodes = (startEdge: FlowEdge): boolean => {
             const nodesInPath = new Set<string>()
 
             // まず、このパス上のすべてのノードを収集
